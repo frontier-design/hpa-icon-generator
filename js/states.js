@@ -176,7 +176,18 @@ window.RA.states = (function () {
     };
   }
 
-  // ── States list ──
+  // ── States list (labels match Shape Preset options in controls) ──
+
+  var SHAPE_PRESET_LABELS = {
+    vertical: "Flat",
+    tapered: "Tapered",
+    topLeftDown: "Angled",
+    horizontal: "Horizontal",
+  };
+
+  function shapePresetLabel(preset) {
+    return SHAPE_PRESET_LABELS[preset] || preset;
+  }
 
   function highlightStateCard(activeIndex) {
     statesList.querySelectorAll(".state-card").forEach(function (card, i) {
@@ -201,7 +212,7 @@ window.RA.states = (function () {
       var info = document.createElement("span");
       info.className = "state-info";
       info.textContent =
-        state.shapePreset + " / " + state.numberOfRectangles + "r";
+        shapePresetLabel(state.shapePreset) + " / " + state.numberOfRectangles + "r";
 
       var deleteBtn = document.createElement("button");
       deleteBtn.className = "state-delete";
