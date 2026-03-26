@@ -89,6 +89,15 @@
   transition: transform 0.35s cubic-bezier(0.25, 1, 0.5, 1);
 }
 
+/* Mobile: reliable first tap on buttons/cards (avoids double-tap / delayed click) */
+@media (max-width: 1023px) {
+  .bottom-sheet button,
+  .bottom-sheet select,
+  .bottom-sheet .state-card {
+    touch-action: manipulation;
+  }
+}
+
 /* Desktop: fixed panel top-left (align breakpoint with bottomsheet.js matchMedia) */
 @media (min-width: 1024px) {
   .bottom-sheet {

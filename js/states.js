@@ -100,7 +100,8 @@ window.RA.states = (function () {
   }
 
   function getEasingFn() {
-    return cubicBezier(0, 1.118, 0.68, 1);
+    /* Matches CSS ease-in-out: cubic-bezier(0.42, 0, 0.58, 1) */
+    return cubicBezier(0.42, 0, 0.58, 1);
   }
 
   // ── Interpolation ──

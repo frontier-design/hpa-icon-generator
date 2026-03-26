@@ -269,10 +269,19 @@ window.RA.sheet = (function () {
   var bodyDragging = false;
   var bodyStartY = 0;
 
+  /** Do not arm sheet pull-down on taps meant for buttons, fields, or state cards (avoids stealing pointer / double-tap). */
+  function isBodyPointerForSheetDrag(target) {
+    if (!target || !target.closest) return false;
+    return !target.closest(
+      "button, a, input, select, textarea, label, [role='button'], .state-card"
+    );
+  }
+
   body.addEventListener("pointerdown", function (e) {
     if (isDesktop()) return;
     if (currentY !== snapOpen) return;
     if (getActiveScrollTop() > 0) return;
+    if (!isBodyPointerForSheetDrag(e.target)) return;
     bodyStartY = e.clientY;
     bodyDragging = true;
   });
