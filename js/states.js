@@ -8,8 +8,8 @@ window.RA.states = (function () {
   var segmentStartTime = 0;
   var callbacks = {};
 
-  /** Transition duration between state keyframes (fixed at 1s for now). */
-  var TRANSITION_DURATION_MS = 1000;
+  /** Transition duration between state keyframes. */
+  var TRANSITION_DURATION_MS = 12500;
 
   var statesPanel = window.RA.sheet.getStatesMount();
   statesPanel.innerHTML = `
