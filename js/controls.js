@@ -124,6 +124,38 @@ window.RA.controls = (function () {
     return Math.min(150, Math.max(0, v));
   }
 
+  /**
+   * Max petal width that still reads as a florette (not a kaleidoscope).
+   * Three constraints, tightest wins:
+   *   1. Outer-edge angular slot: 2*(h+d)*tan(π/n) × 1.5
+   *   2. Inner-edge angular slot: 2*d*tan(π/n) × 1.5  (when d > 0)
+   *   3. Aspect ratio:            h × 2.5  (squat bars never look like petals)
+   */
+  function maxWidthForFlorette(heightPx, distPx, nRects) {
+    var h = clampRectHeight(heightPx);
+    var d = clampDistance(distPx);
+    var n = clampRectCount(nRects);
+    var ang = Math.tan(Math.PI / n);
+    var outerSlot = Math.floor(2 * (h + d) * ang * 1.5);
+    var innerSlot = d > 0 ? Math.floor(2 * d * ang * 1.5) : outerSlot;
+    var aspectCap = Math.floor(h * 2.5);
+    var limit = Math.min(outerSlot, innerSlot, aspectCap);
+    return Math.max(10, Math.min(130, limit));
+  }
+
+  /** Keep width slider max and value within the florette-safe range. */
+  function syncWidthToFlorette() {
+    var h = clampRectHeight(el.rectHeight.value);
+    var d = clampDistance(el.distanceFromCenter.value);
+    var n = clampRectCount(el.numberOfRectangles.value);
+    var m = maxWidthForFlorette(h, d, n);
+    el.rectWidth.max = String(m);
+    var w = clampRectWidth(el.rectWidth.value);
+    if (w > m) w = m;
+    el.rectWidth.value = w;
+    el.rectWidthValue.textContent = w;
+  }
+
   function maxTaperForWidth(widthPx) {
     return Math.floor(clampRectWidth(widthPx) / 2);
   }
@@ -186,17 +218,23 @@ window.RA.controls = (function () {
     });
     if (presets.length === 0) presets = ["vertical", "tapered", "topLeftDown"];
     el.shapePreset.value = presets[randInt(0, presets.length - 1)];
-    el.rectWidth.value = randInt(10, 130);
-    el.rectWidthValue.textContent = el.rectWidth.value;
-    el.rectHeight.value = randInt(10, 345);
-    el.rectHeightValue.textContent = el.rectHeight.value;
-    el.distanceFromCenter.value = randInt(0, 150);
-    el.distanceFromCenterValue.textContent = el.distanceFromCenter.value;
+    var rh = randInt(10, 345);
+    var dist = randInt(0, 150);
+    var n = clampRectCount(el.numberOfRectangles.value);
+    el.rectHeight.value = rh;
+    el.rectHeightValue.textContent = rh;
+    el.distanceFromCenter.value = dist;
+    el.distanceFromCenterValue.textContent = dist;
+    var wMax = maxWidthForFlorette(rh, dist, n);
+    el.rectWidth.max = String(wMax);
+    var rw = randInt(10, wMax);
+    el.rectWidth.value = rw;
+    el.rectWidthValue.textContent = rw;
     syncTaperToWidth();
-    el.taperAmount.value = randInt(0, maxTaperForWidth(el.rectWidth.value));
+    el.taperAmount.value = randInt(0, maxTaperForWidth(rw));
     el.taperAmountValue.textContent = el.taperAmount.value;
     syncCornerToHeight();
-    el.cornerOffset.value = randInt(0, maxCornerForHeight(el.rectHeight.value));
+    el.cornerOffset.value = randInt(0, maxCornerForHeight(rh));
     el.cornerOffsetValue.textContent = el.cornerOffset.value;
     updatePresetParamVisibility();
   }
@@ -215,19 +253,21 @@ window.RA.controls = (function () {
   }
 
   function loadState(state) {
-    var rw = clampRectWidth(state.rectWidth);
     var rh = clampRectHeight(state.rectHeight);
-    el.rectWidth.value = rw;
-    el.rectWidthValue.textContent = rw;
+    var nRect = clampRectCount(state.numberOfRectangles);
+    var dist = clampDistance(state.distanceFromCenter);
     el.rectHeight.value = rh;
     el.rectHeightValue.textContent = rh;
-    var nRect = clampRectCount(state.numberOfRectangles);
     el.numberOfRectangles.value = nRect;
     el.numberOfRectanglesValue.textContent = nRect;
-    var dist = clampDistance(state.distanceFromCenter);
     el.distanceFromCenter.value = dist;
     el.distanceFromCenterValue.textContent = dist;
     el.shapePreset.value = state.shapePreset;
+    var wMax = maxWidthForFlorette(rh, dist, nRect);
+    el.rectWidth.max = String(wMax);
+    var rw = Math.min(clampRectWidth(state.rectWidth), wMax);
+    el.rectWidth.value = rw;
+    el.rectWidthValue.textContent = rw;
     el.taperAmount.max = String(maxTaperForWidth(rw));
     el.taperAmount.value = clampTaperAmount(state.taperAmount, rw);
     el.taperAmountValue.textContent = el.taperAmount.value;
@@ -238,19 +278,21 @@ window.RA.controls = (function () {
   }
 
   function syncDisplay(state) {
-    var rw = clampRectWidth(state.rectWidth);
     var rh = clampRectHeight(state.rectHeight);
-    el.rectWidth.value = rw;
-    el.rectWidthValue.textContent = rw;
+    var nRectSync = clampRectCount(state.numberOfRectangles);
+    var dist = clampDistance(state.distanceFromCenter);
     el.rectHeight.value = rh;
     el.rectHeightValue.textContent = rh;
-    var nRectSync = clampRectCount(state.numberOfRectangles);
     el.numberOfRectangles.value = nRectSync;
     el.numberOfRectanglesValue.textContent = nRectSync;
-    var dist = clampDistance(state.distanceFromCenter);
     el.distanceFromCenter.value = dist;
     el.distanceFromCenterValue.textContent = dist;
     el.shapePreset.value = state.shapePreset;
+    var wMax = maxWidthForFlorette(rh, dist, nRectSync);
+    el.rectWidth.max = String(wMax);
+    var rw = Math.min(clampRectWidth(state.rectWidth), wMax);
+    el.rectWidth.value = rw;
+    el.rectWidthValue.textContent = rw;
     el.taperAmount.max = String(maxTaperForWidth(rw));
     el.taperAmount.value = clampTaperAmount(state.taperAmount, rw);
     el.taperAmountValue.textContent = el.taperAmount.value;
@@ -273,6 +315,7 @@ window.RA.controls = (function () {
 
   function init(onChange) {
     updatePresetParamVisibility();
+    syncWidthToFlorette();
     syncTaperToWidth();
     syncCornerToHeight();
 
@@ -285,16 +328,22 @@ window.RA.controls = (function () {
     el.rectHeight.addEventListener("input", function () {
       el.rectHeightValue.textContent = this.value;
       syncCornerToHeight();
+      syncWidthToFlorette();
+      syncTaperToWidth();
       onChange();
     });
 
     el.numberOfRectangles.addEventListener("input", function () {
       el.numberOfRectanglesValue.textContent = this.value;
+      syncWidthToFlorette();
+      syncTaperToWidth();
       onChange();
     });
 
     el.distanceFromCenter.addEventListener("input", function () {
       el.distanceFromCenterValue.textContent = this.value;
+      syncWidthToFlorette();
+      syncTaperToWidth();
       onChange();
     });
 

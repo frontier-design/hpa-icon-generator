@@ -303,10 +303,9 @@
     var nRect = Math.round(Number(event.detail.numberOfRectangles));
     if (isNaN(nRect)) nRect = 9;
     numberOfRectangles = Math.min(25, Math.max(5, nRect));
-    distanceFromCenter = Math.min(
-      150,
-      Math.max(0, Number(event.detail.distanceFromCenter) || 60)
-    );
+    var distRaw = Number(event.detail.distanceFromCenter);
+    if (isNaN(distRaw)) distRaw = 60;
+    distanceFromCenter = Math.min(150, Math.max(0, distRaw));
     rotationSpeed = event.detail.rotationSpeed;
     shapePreset = event.detail.shapePreset;
     var taperRaw = Number(event.detail.taperAmount);
