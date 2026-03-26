@@ -39,10 +39,25 @@ window.RA.sheet = (function () {
    * Mobile collapsed peek: tall enough for drag handle + HPA logo + “The Florette Tool” subtitle.
    * Measured from layout; falls back before first paint / if heights are 0.
    */
+  function getBrandPeekHeight() {
+    if (!brand) return 0;
+    var h = Math.max(brand.offsetHeight, brand.scrollHeight || 0);
+    if (h > 1) return h;
+    /* When brand is visually collapsed (open sheet), measure children + padding. */
+    var logo = brand.querySelector(".bottom-sheet__brand-logo");
+    var sub = brand.querySelector(".bottom-sheet__subtitle");
+    var inner = 0;
+    if (logo) inner += logo.offsetHeight || logo.getBoundingClientRect().height;
+    if (sub) inner += sub.offsetHeight || sub.getBoundingClientRect().height;
+    var cs = getComputedStyle(brand);
+    inner += parseFloat(cs.paddingTop) + parseFloat(cs.paddingBottom);
+    return Math.ceil(inner);
+  }
+
   function getPeekHeight() {
     if (isDesktop()) return 0;
     var hh = header ? header.offsetHeight : 0;
-    var bh = brand ? brand.offsetHeight : 0;
+    var bh = getBrandPeekHeight();
     var total = hh + bh;
     if (!total || total < 48) return 150;
     return Math.ceil(total + 4);
@@ -202,19 +217,19 @@ window.RA.sheet = (function () {
     return y < mid ? snapOpen : snapCollapsed;
   }
 
-  header.addEventListener("pointerdown", function (e) {
+  function onSheetDragPointerDown(e) {
     if (isDesktop()) return;
     if (e.button !== 0) return;
-    header.setPointerCapture(e.pointerId);
+    e.currentTarget.setPointerCapture(e.pointerId);
     sheet.classList.remove("snapping");
     startPointerY = e.clientY;
     startSheetY = currentY;
     lastTime = e.timeStamp;
     lastPointerY = e.clientY;
     dragging = true;
-  });
+  }
 
-  header.addEventListener("pointermove", function (e) {
+  function onSheetDragPointerMove(e) {
     if (!dragging) return;
     var delta = e.clientY - startPointerY;
     currentY = Math.max(snapOpen, Math.min(snapCollapsed, startSheetY + delta));
@@ -224,18 +239,25 @@ window.RA.sheet = (function () {
     lastPointerY = e.clientY;
     syncExpandedState();
     notifyLayout();
-  });
+  }
 
-  header.addEventListener("pointerup", function () {
+  function onSheetDragPointerUp() {
     if (!dragging) return;
     dragging = false;
     snapTo(findSnapTarget(currentY, velocity));
-  });
+  }
 
-  header.addEventListener("pointercancel", function () {
+  function onSheetDragPointerCancel() {
     if (!dragging) return;
     dragging = false;
     snapTo(findSnapTarget(currentY, velocity));
+  }
+
+  [header, brand].forEach(function (el) {
+    el.addEventListener("pointerdown", onSheetDragPointerDown);
+    el.addEventListener("pointermove", onSheetDragPointerMove);
+    el.addEventListener("pointerup", onSheetDragPointerUp);
+    el.addEventListener("pointercancel", onSheetDragPointerCancel);
   });
 
   sheet.addEventListener("transitionend", function () {

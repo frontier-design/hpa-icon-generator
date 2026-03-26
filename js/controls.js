@@ -21,7 +21,7 @@ window.RA.controls = (function () {
       <label for="shapePreset">Shape Preset</label>
       <div class="select-wrapper">
         <select id="shapePreset">
-          <option value="vertical">Straight</option>
+          <option value="vertical">Flat</option>
           <option value="tapered">Tapered</option>
           <option value="topLeftDown">Angled</option>
         </select>
@@ -180,7 +180,11 @@ window.RA.controls = (function () {
   }
 
   function applyRandomParameters() {
-    var presets = ["vertical", "tapered", "topLeftDown"];
+    var presets = [];
+    el.shapePreset.querySelectorAll("option").forEach(function (opt) {
+      if (opt.value !== "horizontal") presets.push(opt.value);
+    });
+    if (presets.length === 0) presets = ["vertical", "tapered", "topLeftDown"];
     el.shapePreset.value = presets[randInt(0, presets.length - 1)];
     el.numberOfRectangles.value = randInt(5, 25);
     el.numberOfRectanglesValue.textContent = el.numberOfRectangles.value;
