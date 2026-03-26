@@ -8,53 +8,47 @@ window.RA.states = (function () {
   var segmentStartTime = 0;
   var callbacks = {};
 
-  var statesPanel = document.createElement("div");
-  statesPanel.className = "states-panel";
+  /** Transition duration between state keyframes (fixed at 1s for now). */
+  var TRANSITION_DURATION_MS = 1000;
+
+  var statesPanel = window.RA.sheet.getStatesMount();
   statesPanel.innerHTML = `
-    <h3>Animation States</h3>
     <div class="states-controls">
-      <div class="states-duration">
-        <label for="transitionDuration">Transition</label>
-        <input type="number" id="transitionDuration" min="0.1" max="10" step="0.1" value="1">
-        <span>s</span>
-      </div>
-      <div class="states-easing">
-        <label for="easingInput">Easing</label>
-        <input type="text" id="easingInput" value="" placeholder="cubic-bezier(0, 1.118, 0.68, 1)" spellcheck="false">
-      </div>
       <div class="states-buttons">
         <button type="button" id="playStatesBtn" disabled>Play</button>
         <button type="button" id="stopStatesBtn" disabled>Stop</button>
       </div>
     </div>
     <div id="statesList" class="states-list"></div>
-    <div class="states-empty" id="statesEmpty">No states yet. Use "Add state" in the control panel to record the current parameters.</div>
+    <div class="states-empty" id="statesEmpty">No states yet. Click "Add state" to record the current parameters.</div>
   `;
-  document.body.appendChild(statesPanel);
 
   var statesList = document.getElementById("statesList");
   var statesEmpty = document.getElementById("statesEmpty");
   var playBtn = document.getElementById("playStatesBtn");
   var stopBtn = document.getElementById("stopStatesBtn");
-  var transitionDurationInput = document.getElementById("transitionDuration");
-  var easingInput = document.getElementById("easingInput");
+  var addStateBtn = document.getElementById("addStateBtn");
+
+  var toastEl = null;
+  var toastTimer = null;
+
+  function showStateAddedToast() {
+    if (!toastEl) {
+      toastEl = document.createElement("div");
+      toastEl.className = "state-toast";
+      toastEl.setAttribute("role", "status");
+      toastEl.setAttribute("aria-live", "polite");
+      document.body.appendChild(toastEl);
+    }
+    toastEl.textContent = "State added";
+    toastEl.classList.add("state-toast--visible");
+    if (toastTimer) clearTimeout(toastTimer);
+    toastTimer = setTimeout(function () {
+      toastEl.classList.remove("state-toast--visible");
+    }, 1000);
+  }
 
   // ── Easing ──
-
-  function parseCubicBezier(str) {
-    var match = str.match(
-      /cubic-bezier\(\s*([-\d.]+)\s*,\s*([-\d.]+)\s*,\s*([-\d.]+)\s*,\s*([-\d.]+)\s*\)/
-    );
-    if (match) {
-      return [
-        parseFloat(match[1]),
-        parseFloat(match[2]),
-        parseFloat(match[3]),
-        parseFloat(match[4]),
-      ];
-    }
-    return null;
-  }
 
   function cubicBezier(x1, y1, x2, y2) {
     return function (t) {
@@ -106,11 +100,7 @@ window.RA.states = (function () {
   }
 
   function getEasingFn() {
-    var params = parseCubicBezier(easingInput.value);
-    if (params) return cubicBezier(params[0], params[1], params[2], params[3]);
-    return function (t) {
-      return t < 0.5 ? 2 * t * t : -1 + (4 - 2 * t) * t;
-    };
+    return cubicBezier(0, 1.118, 0.68, 1);
   }
 
   // ── Interpolation ──
@@ -167,6 +157,9 @@ window.RA.states = (function () {
       ];
     });
 
+    var fillA = stateA.fillMode || "solid";
+    var fillB = stateB.fillMode || "solid";
+
     return {
       corners: corners,
       rectWidth: lerp(stateA.rectWidth, stateB.rectWidth, et),
@@ -181,6 +174,7 @@ window.RA.states = (function () {
       ),
       rotationSpeed: lerp(stateA.rotationSpeed, stateB.rotationSpeed, et),
       shapePreset: t < 0.5 ? stateA.shapePreset : stateB.shapePreset,
+      fillMode: t < 0.5 ? fillA : fillB,
       taperAmount: lerp(stateA.taperAmount, stateB.taperAmount, et),
       cornerOffset: lerp(stateA.cornerOffset, stateB.cornerOffset, et),
     };
@@ -244,7 +238,7 @@ window.RA.states = (function () {
 
     if (segmentStartTime === 0) segmentStartTime = timestamp;
 
-    var duration = parseFloat(transitionDurationInput.value) * 1000;
+    var duration = TRANSITION_DURATION_MS;
     var elapsed = timestamp - segmentStartTime;
     var t = Math.min(elapsed / duration, 1);
 
@@ -299,12 +293,16 @@ window.RA.states = (function () {
     states.push(state);
     renderStates();
     highlightStateCard(states.length - 1);
+    showStateAddedToast();
   }
 
   function init(cbs) {
     callbacks = cbs;
     playBtn.addEventListener("click", startPlayback);
     stopBtn.addEventListener("click", stopPlayback);
+    addStateBtn.addEventListener("click", function () {
+      addState(callbacks.snapshot());
+    });
     renderStates();
   }
 

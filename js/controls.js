@@ -1,11 +1,8 @@
 window.RA = window.RA || {};
 
 window.RA.controls = (function () {
-  var panel = document.createElement("div");
-  panel.className = "controls-panel";
+  var panel = window.RA.sheet.getControlsMount();
   panel.innerHTML = `
-    <h3>Control Panel</h3>
-
     <div class="control-group">
       <label>Background Color</label>
       <div class="color-swatches">
@@ -19,13 +16,28 @@ window.RA.controls = (function () {
     </div>
 
     <div class="control-group">
+      <label>Florette fill</label>
+      <div class="fill-mode-buttons">
+        <button type="button" class="fill-mode-btn selected" data-fill-mode="solid">Solid color</button>
+        <button type="button" class="fill-mode-btn" data-fill-mode="gradient">Foil texture</button>
+      </div>
+    </div>
+
+    <div class="control-group">
       <label for="shapePreset">Shape Preset</label>
-      <select id="shapePreset">
-        <option value="vertical">Vertical</option>
-        <option value="horizontal">Horizontal</option>
-        <option value="tapered">Tapered</option>
-        <option value="topLeftDown">Top left down</option>
-      </select>
+      <div class="select-wrapper">
+        <select id="shapePreset">
+          <option value="vertical">Vertical</option>
+          <option value="horizontal">Horizontal</option>
+          <option value="tapered">Tapered</option>
+          <option value="topLeftDown">Top left down</option>
+        </select>
+      </div>
+    </div>
+
+    <div class="control-group">
+      <label for="numberOfRectangles">Number of Rectangles</label>
+      <input type="number" id="numberOfRectangles" min="1" max="50" value="9">
     </div>
 
     <div class="control-group">
@@ -45,23 +57,10 @@ window.RA.controls = (function () {
     </div>
 
     <div class="control-group">
-      <label for="numberOfRectangles">Number of Rectangles</label>
-      <input type="number" id="numberOfRectangles" min="1" max="50" value="9">
-    </div>
-
-    <div class="control-group">
       <label for="distanceFromCenter">Distance from Center</label>
       <div class="slider-container">
         <input type="range" id="distanceFromCenter" min="0" max="300" value="60">
         <div class="value-display"><span id="distanceFromCenterValue">60</span>px</div>
-      </div>
-    </div>
-
-    <div class="control-group">
-      <label for="rotationSpeed">Rotation Speed</label>
-      <div class="slider-container">
-        <input type="range" id="rotationSpeed" min="0" max="5" step="0.1" value="0.5">
-        <div class="value-display"><span id="rotationSpeedValue">0.5</span>&deg;</div>
       </div>
     </div>
 
@@ -82,15 +81,10 @@ window.RA.controls = (function () {
     </div>
 
     <div class="control-group">
-      <button type="button" id="toggleAnchorVisibility">Toggle anchor visibility</button>
-    </div>
-
-    <div class="control-group">
       <button type="button" id="addStateBtn">Add state</button>
     </div>
-  `;
 
-  document.body.appendChild(panel);
+  `;
 
   var el = {
     rectWidth: document.getElementById("rectWidth"),
@@ -100,16 +94,27 @@ window.RA.controls = (function () {
     numberOfRectangles: document.getElementById("numberOfRectangles"),
     distanceFromCenter: document.getElementById("distanceFromCenter"),
     distanceFromCenterValue: document.getElementById("distanceFromCenterValue"),
-    rotationSpeed: document.getElementById("rotationSpeed"),
-    rotationSpeedValue: document.getElementById("rotationSpeedValue"),
     shapePreset: document.getElementById("shapePreset"),
     taperAmount: document.getElementById("taperAmount"),
     taperAmountValue: document.getElementById("taperAmountValue"),
     cornerOffset: document.getElementById("cornerOffset"),
     cornerOffsetValue: document.getElementById("cornerOffsetValue"),
-    addStateBtn: document.getElementById("addStateBtn"),
-    toggleAnchorBtn: document.getElementById("toggleAnchorVisibility"),
   };
+
+  function getFillMode() {
+    var sel = panel.querySelector(".fill-mode-btn.selected");
+    return sel ? sel.getAttribute("data-fill-mode") : "solid";
+  }
+
+  function setFillMode(mode) {
+    var m = mode === "gradient" ? "gradient" : "solid";
+    panel.querySelectorAll(".fill-mode-btn").forEach(function (btn) {
+      btn.classList.toggle(
+        "selected",
+        btn.getAttribute("data-fill-mode") === m
+      );
+    });
+  }
 
   function updatePresetParamVisibility() {
     var preset = el.shapePreset.value;
@@ -121,11 +126,12 @@ window.RA.controls = (function () {
 
   function snapshot() {
     return {
+      fillMode: getFillMode(),
       rectWidth: parseFloat(el.rectWidth.value),
       rectHeight: parseFloat(el.rectHeight.value),
       numberOfRectangles: parseInt(el.numberOfRectangles.value),
       distanceFromCenter: parseFloat(el.distanceFromCenter.value),
-      rotationSpeed: parseFloat(el.rotationSpeed.value),
+      rotationSpeed: 0,
       shapePreset: el.shapePreset.value,
       taperAmount: parseFloat(el.taperAmount.value),
       cornerOffset: parseFloat(el.cornerOffset.value),
@@ -133,6 +139,7 @@ window.RA.controls = (function () {
   }
 
   function loadState(state) {
+    setFillMode(state.fillMode || "solid");
     el.rectWidth.value = state.rectWidth;
     el.rectWidthValue.textContent = state.rectWidth;
     el.rectHeight.value = state.rectHeight;
@@ -140,8 +147,6 @@ window.RA.controls = (function () {
     el.numberOfRectangles.value = state.numberOfRectangles;
     el.distanceFromCenter.value = state.distanceFromCenter;
     el.distanceFromCenterValue.textContent = state.distanceFromCenter;
-    el.rotationSpeed.value = state.rotationSpeed;
-    el.rotationSpeedValue.textContent = state.rotationSpeed;
     el.shapePreset.value = state.shapePreset;
     el.taperAmount.value = state.taperAmount;
     el.taperAmountValue.textContent = state.taperAmount;
@@ -151,6 +156,7 @@ window.RA.controls = (function () {
   }
 
   function syncDisplay(state) {
+    setFillMode(state.fillMode || "solid");
     el.rectWidth.value = Math.round(state.rectWidth);
     el.rectWidthValue.textContent = Math.round(state.rectWidth);
     el.rectHeight.value = Math.round(state.rectHeight);
@@ -160,8 +166,6 @@ window.RA.controls = (function () {
     el.distanceFromCenterValue.textContent = Math.round(
       state.distanceFromCenter
     );
-    el.rotationSpeed.value = state.rotationSpeed.toFixed(1);
-    el.rotationSpeedValue.textContent = state.rotationSpeed.toFixed(1);
     el.shapePreset.value = state.shapePreset;
     el.taperAmount.value = Math.round(state.taperAmount);
     el.taperAmountValue.textContent = Math.round(state.taperAmount);
@@ -172,7 +176,10 @@ window.RA.controls = (function () {
 
   function setDisabled(disabled) {
     panel.querySelectorAll("input, select, button").forEach(function (input) {
-      if (input.id === "addStateBtn" || input.classList.contains("color-swatch"))
+      if (
+        input.id === "addStateBtn" ||
+        input.classList.contains("color-swatch")
+      )
         return;
       input.disabled = disabled;
     });
@@ -198,9 +205,14 @@ window.RA.controls = (function () {
       onChange();
     });
 
-    el.rotationSpeed.addEventListener("input", function () {
-      el.rotationSpeedValue.textContent = this.value;
-      onChange();
+    panel.querySelectorAll(".fill-mode-btn").forEach(function (btn) {
+      btn.addEventListener("click", function () {
+        panel.querySelectorAll(".fill-mode-btn").forEach(function (b) {
+          b.classList.remove("selected");
+        });
+        btn.classList.add("selected");
+        onChange();
+      });
     });
 
     el.shapePreset.addEventListener("change", function () {
@@ -218,10 +230,6 @@ window.RA.controls = (function () {
       onChange();
     });
 
-    el.toggleAnchorBtn.addEventListener("click", function () {
-      window.dispatchEvent(new CustomEvent("toggleAnchorVisibility"));
-    });
-
     panel.querySelectorAll(".color-swatch").forEach(function (swatch) {
       swatch.style.backgroundColor = swatch.getAttribute("data-color");
       swatch.addEventListener("click", function () {
@@ -234,16 +242,11 @@ window.RA.controls = (function () {
     });
   }
 
-  function onAddState(callback) {
-    el.addStateBtn.addEventListener("click", callback);
-  }
-
   return {
     init: init,
     snapshot: snapshot,
     loadState: loadState,
     syncDisplay: syncDisplay,
     setDisabled: setDisabled,
-    onAddState: onAddState,
   };
 })();

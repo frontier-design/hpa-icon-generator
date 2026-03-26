@@ -15,11 +15,8 @@
 
   controls.init(updateScene);
 
-  controls.onAddState(function () {
-    states.addState(controls.snapshot());
-  });
-
   states.init({
+    snapshot: controls.snapshot,
     dispatchState: dispatchState,
     syncDisplay: controls.syncDisplay,
     setDisabled: controls.setDisabled,
