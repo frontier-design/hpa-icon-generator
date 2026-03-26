@@ -16,7 +16,6 @@
   var cornerOffset = 10;
   var showAnchors = false;
   var corners = null;
-  var fillMode = "solid";
 
   var rectangles = [];
   var circles = [];
@@ -122,7 +121,7 @@
 
   /** Preload the foil texture so it's ready when gradient mode is used. */
   var foilImage = new Image();
-  foilImage.src = "assets/images/HPA_Florette_Foil.png";
+  foilImage.src = "assets/images/HPA_Florette_Foil.jpg";
   var foilLoaded = false;
   foilImage.onload = function () {
     foilLoaded = true;
@@ -230,7 +229,7 @@
       petals.push(shape);
     }
 
-    if (fillMode === "gradient" && petals.length > 0) {
+    if (petals.length > 0) {
       try {
         var united = petals[0];
         for (var j = 1; j < petals.length; j++) {
@@ -268,10 +267,6 @@
           rectangles.push(petals[k]);
         }
       }
-    } else {
-      for (var p = 0; p < petals.length; p++) {
-        rectangles.push(petals[p]);
-      }
     }
 
     var centerMarker = new Path.Circle({
@@ -290,7 +285,7 @@
   };
 
   view.onFrame = function () {
-    if (fillMode === "gradient" && rectangles.length === 1) {
+    if (rectangles.length === 1) {
       rectangles[0].rotate(rotationSpeed, rotationCenter);
       return;
     }
@@ -300,17 +295,28 @@
   };
 
   window.addEventListener("updateRectangles", function (event) {
-    fillMode = event.detail.fillMode || "solid";
-    rectWidth = event.detail.rectWidth;
-    rectHeight = event.detail.rectHeight;
+    rectWidth = Math.min(130, Math.max(10, Number(event.detail.rectWidth) || 25));
+    rectHeight = Math.min(
+      345,
+      Math.max(10, Number(event.detail.rectHeight) || 200)
+    );
     var nRect = Math.round(Number(event.detail.numberOfRectangles));
     if (isNaN(nRect)) nRect = 9;
     numberOfRectangles = Math.min(25, Math.max(5, nRect));
-    distanceFromCenter = event.detail.distanceFromCenter;
+    distanceFromCenter = Math.min(
+      150,
+      Math.max(0, Number(event.detail.distanceFromCenter) || 60)
+    );
     rotationSpeed = event.detail.rotationSpeed;
     shapePreset = event.detail.shapePreset;
-    taperAmount = event.detail.taperAmount;
-    cornerOffset = event.detail.cornerOffset;
+    var taperRaw = Number(event.detail.taperAmount);
+    if (isNaN(taperRaw)) taperRaw = 7;
+    var taperMax = Math.floor(rectWidth / 2);
+    taperAmount = Math.min(Math.max(0, taperRaw), taperMax);
+    var cornerRaw = Number(event.detail.cornerOffset);
+    if (isNaN(cornerRaw)) cornerRaw = 10;
+    var cornerMax = Math.max(0, rectHeight - 1);
+    cornerOffset = Math.min(Math.max(0, cornerRaw), cornerMax);
     corners = event.detail.corners || null;
     createRectangles();
   });

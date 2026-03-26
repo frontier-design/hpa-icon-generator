@@ -3,6 +3,8 @@ window.RA = window.RA || {};
 window.RA.controls = (function () {
   var panel = window.RA.sheet.getControlsMount();
   panel.innerHTML = `
+    <div class="control-panel">
+      <div class="control-panel__main">
     <div class="control-group">
       <label>Background Color</label>
       <div class="color-swatches">
@@ -16,23 +18,15 @@ window.RA.controls = (function () {
     </div>
 
     <div class="control-group">
-      <label>Florette fill</label>
-      <div class="fill-mode-buttons">
-        <button type="button" class="fill-mode-btn selected" data-fill-mode="solid">Solid color</button>
-        <button type="button" class="fill-mode-btn" data-fill-mode="gradient">Foil texture</button>
-      </div>
-    </div>
-
-    <div class="control-group">
       <label for="shapePreset">Shape Preset</label>
       <div class="select-wrapper">
         <select id="shapePreset">
-          <option value="vertical">Vertical</option>
-          <option value="horizontal">Horizontal</option>
+          <option value="vertical">Straight</option>
           <option value="tapered">Tapered</option>
-          <option value="topLeftDown">Top left down</option>
+          <option value="topLeftDown">Angled</option>
         </select>
       </div>
+      <button type="button" class="randomise-btn" id="randomiseBtn">Randomize</button>
     </div>
 
     <div class="control-group">
@@ -46,7 +40,7 @@ window.RA.controls = (function () {
     <div class="control-group">
       <label for="rectWidth">Rectangle Width</label>
       <div class="slider-container">
-        <input type="range" id="rectWidth" min="10" max="200" value="25">
+        <input type="range" id="rectWidth" min="10" max="130" value="25">
         <div class="value-display"><span id="rectWidthValue">25</span>px</div>
       </div>
     </div>
@@ -54,7 +48,7 @@ window.RA.controls = (function () {
     <div class="control-group">
       <label for="rectHeight">Rectangle Height</label>
       <div class="slider-container">
-        <input type="range" id="rectHeight" min="10" max="500" value="200">
+        <input type="range" id="rectHeight" min="10" max="345" value="200">
         <div class="value-display"><span id="rectHeightValue">200</span>px</div>
       </div>
     </div>
@@ -62,7 +56,7 @@ window.RA.controls = (function () {
     <div class="control-group">
       <label for="distanceFromCenter">Distance from Center</label>
       <div class="slider-container">
-        <input type="range" id="distanceFromCenter" min="0" max="300" value="60">
+        <input type="range" id="distanceFromCenter" min="0" max="150" value="60">
         <div class="value-display"><span id="distanceFromCenterValue">60</span>px</div>
       </div>
     </div>
@@ -86,7 +80,8 @@ window.RA.controls = (function () {
     <div class="control-group">
       <button type="button" id="addStateBtn">Add state</button>
     </div>
-
+      </div>
+    </div>
   `;
 
   var el = {
@@ -105,25 +100,71 @@ window.RA.controls = (function () {
     cornerOffsetValue: document.getElementById("cornerOffsetValue"),
   };
 
-  function getFillMode() {
-    var sel = panel.querySelector(".fill-mode-btn.selected");
-    return sel ? sel.getAttribute("data-fill-mode") : "solid";
-  }
-
-  function setFillMode(mode) {
-    var m = mode === "gradient" ? "gradient" : "solid";
-    panel.querySelectorAll(".fill-mode-btn").forEach(function (btn) {
-      btn.classList.toggle(
-        "selected",
-        btn.getAttribute("data-fill-mode") === m
-      );
-    });
-  }
-
   function clampRectCount(n) {
     var v = Math.round(Number(n));
     if (isNaN(v)) return 9;
     return Math.min(25, Math.max(5, v));
+  }
+
+  function clampRectWidth(n) {
+    var v = Math.round(Number(n));
+    if (isNaN(v)) return 25;
+    return Math.min(130, Math.max(10, v));
+  }
+
+  function clampRectHeight(n) {
+    var v = Math.round(Number(n));
+    if (isNaN(v)) return 200;
+    return Math.min(345, Math.max(10, v));
+  }
+
+  function clampDistance(n) {
+    var v = Math.round(Number(n));
+    if (isNaN(v)) return 60;
+    return Math.min(150, Math.max(0, v));
+  }
+
+  function maxTaperForWidth(widthPx) {
+    return Math.floor(clampRectWidth(widthPx) / 2);
+  }
+
+  function clampTaperAmount(t, widthPx) {
+    var m = maxTaperForWidth(widthPx);
+    var v = Math.round(Number(t));
+    if (isNaN(v)) return Math.min(7, m);
+    return Math.min(m, Math.max(0, v));
+  }
+
+  /** Keep taper slider max and value ≤ half of rectangle width (px). */
+  function syncTaperToWidth() {
+    var rw = clampRectWidth(el.rectWidth.value);
+    var m = maxTaperForWidth(rw);
+    el.taperAmount.max = String(m);
+    var t = clampTaperAmount(el.taperAmount.value, rw);
+    el.taperAmount.value = t;
+    el.taperAmountValue.textContent = t;
+  }
+
+  /** Angled preset: corner offset must be strictly less than rectangle height (max = height − 1 px). */
+  function maxCornerForHeight(heightPx) {
+    var h = clampRectHeight(heightPx);
+    return Math.max(0, h - 1);
+  }
+
+  function clampCornerOffset(c, heightPx) {
+    var m = maxCornerForHeight(heightPx);
+    var v = Math.round(Number(c));
+    if (isNaN(v)) return Math.min(10, m);
+    return Math.min(m, Math.max(0, v));
+  }
+
+  function syncCornerToHeight() {
+    var rh = clampRectHeight(el.rectHeight.value);
+    var m = maxCornerForHeight(rh);
+    el.cornerOffset.max = String(m);
+    var c = clampCornerOffset(el.cornerOffset.value, rh);
+    el.cornerOffset.value = c;
+    el.cornerOffsetValue.textContent = c;
   }
 
   function updatePresetParamVisibility() {
@@ -134,57 +175,86 @@ window.RA.controls = (function () {
     });
   }
 
+  function randInt(min, max) {
+    return min + Math.floor(Math.random() * (max - min + 1));
+  }
+
+  function applyRandomParameters() {
+    var presets = ["vertical", "tapered", "topLeftDown"];
+    el.shapePreset.value = presets[randInt(0, presets.length - 1)];
+    el.numberOfRectangles.value = randInt(5, 25);
+    el.numberOfRectanglesValue.textContent = el.numberOfRectangles.value;
+    el.rectWidth.value = randInt(10, 130);
+    el.rectWidthValue.textContent = el.rectWidth.value;
+    el.rectHeight.value = randInt(10, 345);
+    el.rectHeightValue.textContent = el.rectHeight.value;
+    el.distanceFromCenter.value = randInt(0, 150);
+    el.distanceFromCenterValue.textContent = el.distanceFromCenter.value;
+    syncTaperToWidth();
+    el.taperAmount.value = randInt(0, maxTaperForWidth(el.rectWidth.value));
+    el.taperAmountValue.textContent = el.taperAmount.value;
+    syncCornerToHeight();
+    el.cornerOffset.value = randInt(0, maxCornerForHeight(el.rectHeight.value));
+    el.cornerOffsetValue.textContent = el.cornerOffset.value;
+    updatePresetParamVisibility();
+  }
+
   function snapshot() {
     return {
-      fillMode: getFillMode(),
-      rectWidth: parseFloat(el.rectWidth.value),
-      rectHeight: parseFloat(el.rectHeight.value),
+      rectWidth: clampRectWidth(el.rectWidth.value),
+      rectHeight: clampRectHeight(el.rectHeight.value),
       numberOfRectangles: clampRectCount(el.numberOfRectangles.value),
-      distanceFromCenter: parseFloat(el.distanceFromCenter.value),
+      distanceFromCenter: clampDistance(el.distanceFromCenter.value),
       rotationSpeed: 0,
       shapePreset: el.shapePreset.value,
-      taperAmount: parseFloat(el.taperAmount.value),
-      cornerOffset: parseFloat(el.cornerOffset.value),
+      taperAmount: clampTaperAmount(el.taperAmount.value, el.rectWidth.value),
+      cornerOffset: clampCornerOffset(el.cornerOffset.value, el.rectHeight.value),
     };
   }
 
   function loadState(state) {
-    setFillMode(state.fillMode || "solid");
-    el.rectWidth.value = state.rectWidth;
-    el.rectWidthValue.textContent = state.rectWidth;
-    el.rectHeight.value = state.rectHeight;
-    el.rectHeightValue.textContent = state.rectHeight;
+    var rw = clampRectWidth(state.rectWidth);
+    var rh = clampRectHeight(state.rectHeight);
+    el.rectWidth.value = rw;
+    el.rectWidthValue.textContent = rw;
+    el.rectHeight.value = rh;
+    el.rectHeightValue.textContent = rh;
     var nRect = clampRectCount(state.numberOfRectangles);
     el.numberOfRectangles.value = nRect;
     el.numberOfRectanglesValue.textContent = nRect;
-    el.distanceFromCenter.value = state.distanceFromCenter;
-    el.distanceFromCenterValue.textContent = state.distanceFromCenter;
+    var dist = clampDistance(state.distanceFromCenter);
+    el.distanceFromCenter.value = dist;
+    el.distanceFromCenterValue.textContent = dist;
     el.shapePreset.value = state.shapePreset;
-    el.taperAmount.value = state.taperAmount;
-    el.taperAmountValue.textContent = state.taperAmount;
-    el.cornerOffset.value = state.cornerOffset;
-    el.cornerOffsetValue.textContent = state.cornerOffset;
+    el.taperAmount.max = String(maxTaperForWidth(rw));
+    el.taperAmount.value = clampTaperAmount(state.taperAmount, rw);
+    el.taperAmountValue.textContent = el.taperAmount.value;
+    el.cornerOffset.max = String(maxCornerForHeight(rh));
+    el.cornerOffset.value = clampCornerOffset(state.cornerOffset, rh);
+    el.cornerOffsetValue.textContent = el.cornerOffset.value;
     updatePresetParamVisibility();
   }
 
   function syncDisplay(state) {
-    setFillMode(state.fillMode || "solid");
-    el.rectWidth.value = Math.round(state.rectWidth);
-    el.rectWidthValue.textContent = Math.round(state.rectWidth);
-    el.rectHeight.value = Math.round(state.rectHeight);
-    el.rectHeightValue.textContent = Math.round(state.rectHeight);
+    var rw = clampRectWidth(state.rectWidth);
+    var rh = clampRectHeight(state.rectHeight);
+    el.rectWidth.value = rw;
+    el.rectWidthValue.textContent = rw;
+    el.rectHeight.value = rh;
+    el.rectHeightValue.textContent = rh;
     var nRectSync = clampRectCount(state.numberOfRectangles);
     el.numberOfRectangles.value = nRectSync;
     el.numberOfRectanglesValue.textContent = nRectSync;
-    el.distanceFromCenter.value = Math.round(state.distanceFromCenter);
-    el.distanceFromCenterValue.textContent = Math.round(
-      state.distanceFromCenter
-    );
+    var dist = clampDistance(state.distanceFromCenter);
+    el.distanceFromCenter.value = dist;
+    el.distanceFromCenterValue.textContent = dist;
     el.shapePreset.value = state.shapePreset;
-    el.taperAmount.value = Math.round(state.taperAmount);
-    el.taperAmountValue.textContent = Math.round(state.taperAmount);
-    el.cornerOffset.value = Math.round(state.cornerOffset);
-    el.cornerOffsetValue.textContent = Math.round(state.cornerOffset);
+    el.taperAmount.max = String(maxTaperForWidth(rw));
+    el.taperAmount.value = clampTaperAmount(state.taperAmount, rw);
+    el.taperAmountValue.textContent = el.taperAmount.value;
+    el.cornerOffset.max = String(maxCornerForHeight(rh));
+    el.cornerOffset.value = clampCornerOffset(state.cornerOffset, rh);
+    el.cornerOffsetValue.textContent = el.cornerOffset.value;
     updatePresetParamVisibility();
   }
 
@@ -201,14 +271,18 @@ window.RA.controls = (function () {
 
   function init(onChange) {
     updatePresetParamVisibility();
+    syncTaperToWidth();
+    syncCornerToHeight();
 
     el.rectWidth.addEventListener("input", function () {
       el.rectWidthValue.textContent = this.value;
+      syncTaperToWidth();
       onChange();
     });
 
     el.rectHeight.addEventListener("input", function () {
       el.rectHeightValue.textContent = this.value;
+      syncCornerToHeight();
       onChange();
     });
 
@@ -222,18 +296,13 @@ window.RA.controls = (function () {
       onChange();
     });
 
-    panel.querySelectorAll(".fill-mode-btn").forEach(function (btn) {
-      btn.addEventListener("click", function () {
-        panel.querySelectorAll(".fill-mode-btn").forEach(function (b) {
-          b.classList.remove("selected");
-        });
-        btn.classList.add("selected");
-        onChange();
-      });
-    });
-
     el.shapePreset.addEventListener("change", function () {
       updatePresetParamVisibility();
+      onChange();
+    });
+
+    document.getElementById("randomiseBtn").addEventListener("click", function () {
+      applyRandomParameters();
       onChange();
     });
 

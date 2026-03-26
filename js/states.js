@@ -157,9 +157,6 @@ window.RA.states = (function () {
       ];
     });
 
-    var fillA = stateA.fillMode || "solid";
-    var fillB = stateB.fillMode || "solid";
-
     return {
       corners: corners,
       rectWidth: lerp(stateA.rectWidth, stateB.rectWidth, et),
@@ -174,7 +171,6 @@ window.RA.states = (function () {
       ),
       rotationSpeed: lerp(stateA.rotationSpeed, stateB.rotationSpeed, et),
       shapePreset: t < 0.5 ? stateA.shapePreset : stateB.shapePreset,
-      fillMode: t < 0.5 ? fillA : fillB,
       taperAmount: lerp(stateA.taperAmount, stateB.taperAmount, et),
       cornerOffset: lerp(stateA.cornerOffset, stateB.cornerOffset, et),
     };

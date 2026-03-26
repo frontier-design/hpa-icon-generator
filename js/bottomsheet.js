@@ -6,7 +6,10 @@ window.RA.sheet = (function () {
   sheet.innerHTML = [
     '<div class="bottom-sheet__header">',
     '  <div class="bottom-sheet__handle"></div>',
-    '  <h3 class="bottom-sheet__title">The HPA Florette Tool</h3>',
+    "</div>",
+    '<div class="bottom-sheet__brand">',
+    '  <img class="bottom-sheet__brand-logo" src="assets/images/HPA_Logo_Mar.svg" width="1134" height="57" alt="HPA">',
+    '  <p class="bottom-sheet__subtitle">The Florette Tool</p>',
     "</div>",
     '<div class="bottom-sheet__tabs">',
     '  <button class="bottom-sheet__tab active" data-tab="controls">Controls</button>',
@@ -20,6 +23,7 @@ window.RA.sheet = (function () {
   document.body.appendChild(sheet);
 
   var header = sheet.querySelector(".bottom-sheet__header");
+  var brand = sheet.querySelector(".bottom-sheet__brand");
   var body = sheet.querySelector(".bottom-sheet__body");
   var tabs = sheet.querySelectorAll(".bottom-sheet__tab");
   var sections = sheet.querySelectorAll(".bottom-sheet__section");
@@ -31,8 +35,18 @@ window.RA.sheet = (function () {
     return desktopMq.matches;
   }
 
-  /** Visible strip when collapsed (handle + title peek). */
-  var PEEK = 56;
+  /**
+   * Mobile collapsed peek: tall enough for drag handle + HPA logo + “The Florette Tool” subtitle.
+   * Measured from layout; falls back before first paint / if heights are 0.
+   */
+  function getPeekHeight() {
+    if (isDesktop()) return 0;
+    var hh = header ? header.offsetHeight : 0;
+    var bh = brand ? brand.offsetHeight : 0;
+    var total = hh + bh;
+    if (!total || total < 48) return 150;
+    return Math.ceil(total + 4);
+  }
 
   // ── Snap positions (sheet height ≤ 50vh; translateY 0 = fully open, larger = collapsed) ──
 
@@ -47,7 +61,9 @@ window.RA.sheet = (function () {
     var h = window.innerHeight;
     var sh = sheet.offsetHeight;
     if (!sh || sh < 80) sh = Math.round(h * 0.5);
-    snapCollapsed = Math.max(0, sh - PEEK);
+    var peek = getPeekHeight();
+    if (peek >= sh) peek = Math.max(48, sh - 1);
+    snapCollapsed = Math.max(0, sh - peek);
   }
 
   /** Visible region for the florette: above bottom sheet (mobile) or right of sidebar (desktop). */
@@ -84,7 +100,24 @@ window.RA.sheet = (function () {
     window.dispatchEvent(new CustomEvent("sheetLayout"));
   }
 
-  /** Fully expanded = sheet at snapOpen (translateY 0). Desktop: no slide; title stays visible. */
+  /**
+   * Scroll offset of the active panel’s scrollable area. `.bottom-sheet__body` is overflow:hidden;
+   * controls scroll inside `.control-panel__main`, animation inside `#sheet-states`.
+   */
+  function getActiveScrollTop() {
+    var controls = document.getElementById("sheet-controls");
+    var states = document.getElementById("sheet-states");
+    if (controls && controls.classList.contains("active")) {
+      var main = controls.querySelector(".control-panel__main");
+      if (main) return main.scrollTop;
+    }
+    if (states && states.classList.contains("active")) {
+      return states.scrollTop;
+    }
+    return body.scrollTop;
+  }
+
+  /** Fully expanded = sheet at snapOpen (translateY 0). Desktop: no slide. */
   function syncExpandedState() {
     if (isDesktop()) {
       sheet.classList.remove("bottom-sheet--expanded");
@@ -124,6 +157,17 @@ window.RA.sheet = (function () {
   }
 
   window.addEventListener("resize", applyLayout);
+
+  var brandLogo = sheet.querySelector(".bottom-sheet__brand-logo");
+  if (brandLogo && !brandLogo.complete) {
+    brandLogo.addEventListener("load", applyLayout);
+  }
+  if (document.fonts && document.fonts.ready) {
+    document.fonts.ready.then(applyLayout);
+  }
+  requestAnimationFrame(function () {
+    requestAnimationFrame(applyLayout);
+  });
 
   // ── Drag mechanics ──
 
@@ -206,7 +250,7 @@ window.RA.sheet = (function () {
   body.addEventListener("pointerdown", function (e) {
     if (isDesktop()) return;
     if (currentY !== snapOpen) return;
-    if (body.scrollTop > 0) return;
+    if (getActiveScrollTop() > 0) return;
     bodyStartY = e.clientY;
     bodyDragging = true;
   });
@@ -214,8 +258,12 @@ window.RA.sheet = (function () {
   body.addEventListener("pointermove", function (e) {
     if (isDesktop()) return;
     if (!bodyDragging) return;
+    if (getActiveScrollTop() > 0) {
+      bodyDragging = false;
+      return;
+    }
     var delta = e.clientY - bodyStartY;
-    if (delta > 10 && body.scrollTop === 0) {
+    if (delta > 10 && getActiveScrollTop() === 0) {
       bodyDragging = false;
       startPointerY = e.clientY;
       startSheetY = currentY;
@@ -228,6 +276,10 @@ window.RA.sheet = (function () {
   });
 
   body.addEventListener("pointerup", function () {
+    bodyDragging = false;
+  });
+
+  body.addEventListener("pointercancel", function () {
     bodyDragging = false;
   });
 
