@@ -9,7 +9,7 @@ window.RA.states = (function () {
   var callbacks = {};
 
   /** Transition duration between state keyframes. */
-  var TRANSITION_DURATION_MS = 12500;
+  var TRANSITION_DURATION_MS = 12000;
 
   var statesPanel = window.RA.sheet.getStatesMount();
   statesPanel.innerHTML = `

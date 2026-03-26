@@ -186,8 +186,6 @@ window.RA.controls = (function () {
     });
     if (presets.length === 0) presets = ["vertical", "tapered", "topLeftDown"];
     el.shapePreset.value = presets[randInt(0, presets.length - 1)];
-    el.numberOfRectangles.value = randInt(5, 25);
-    el.numberOfRectanglesValue.textContent = el.numberOfRectangles.value;
     el.rectWidth.value = randInt(10, 130);
     el.rectWidthValue.textContent = el.rectWidth.value;
     el.rectHeight.value = randInt(10, 345);
