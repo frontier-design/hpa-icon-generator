@@ -37,7 +37,10 @@ window.RA.controls = (function () {
 
     <div class="control-group">
       <label for="numberOfRectangles">Number of Rectangles</label>
-      <input type="number" id="numberOfRectangles" min="1" max="50" value="9">
+      <div class="slider-container">
+        <input type="range" id="numberOfRectangles" min="5" max="25" step="1" value="9">
+        <div class="value-display"><span id="numberOfRectanglesValue">9</span></div>
+      </div>
     </div>
 
     <div class="control-group">
@@ -92,6 +95,7 @@ window.RA.controls = (function () {
     rectHeight: document.getElementById("rectHeight"),
     rectHeightValue: document.getElementById("rectHeightValue"),
     numberOfRectangles: document.getElementById("numberOfRectangles"),
+    numberOfRectanglesValue: document.getElementById("numberOfRectanglesValue"),
     distanceFromCenter: document.getElementById("distanceFromCenter"),
     distanceFromCenterValue: document.getElementById("distanceFromCenterValue"),
     shapePreset: document.getElementById("shapePreset"),
@@ -116,6 +120,12 @@ window.RA.controls = (function () {
     });
   }
 
+  function clampRectCount(n) {
+    var v = Math.round(Number(n));
+    if (isNaN(v)) return 9;
+    return Math.min(25, Math.max(5, v));
+  }
+
   function updatePresetParamVisibility() {
     var preset = el.shapePreset.value;
     panel.querySelectorAll(".preset-param").forEach(function (param) {
@@ -129,7 +139,7 @@ window.RA.controls = (function () {
       fillMode: getFillMode(),
       rectWidth: parseFloat(el.rectWidth.value),
       rectHeight: parseFloat(el.rectHeight.value),
-      numberOfRectangles: parseInt(el.numberOfRectangles.value),
+      numberOfRectangles: clampRectCount(el.numberOfRectangles.value),
       distanceFromCenter: parseFloat(el.distanceFromCenter.value),
       rotationSpeed: 0,
       shapePreset: el.shapePreset.value,
@@ -144,7 +154,9 @@ window.RA.controls = (function () {
     el.rectWidthValue.textContent = state.rectWidth;
     el.rectHeight.value = state.rectHeight;
     el.rectHeightValue.textContent = state.rectHeight;
-    el.numberOfRectangles.value = state.numberOfRectangles;
+    var nRect = clampRectCount(state.numberOfRectangles);
+    el.numberOfRectangles.value = nRect;
+    el.numberOfRectanglesValue.textContent = nRect;
     el.distanceFromCenter.value = state.distanceFromCenter;
     el.distanceFromCenterValue.textContent = state.distanceFromCenter;
     el.shapePreset.value = state.shapePreset;
@@ -161,7 +173,9 @@ window.RA.controls = (function () {
     el.rectWidthValue.textContent = Math.round(state.rectWidth);
     el.rectHeight.value = Math.round(state.rectHeight);
     el.rectHeightValue.textContent = Math.round(state.rectHeight);
-    el.numberOfRectangles.value = state.numberOfRectangles;
+    var nRectSync = clampRectCount(state.numberOfRectangles);
+    el.numberOfRectangles.value = nRectSync;
+    el.numberOfRectanglesValue.textContent = nRectSync;
     el.distanceFromCenter.value = Math.round(state.distanceFromCenter);
     el.distanceFromCenterValue.textContent = Math.round(
       state.distanceFromCenter
@@ -198,7 +212,10 @@ window.RA.controls = (function () {
       onChange();
     });
 
-    el.numberOfRectangles.addEventListener("input", onChange);
+    el.numberOfRectangles.addEventListener("input", function () {
+      el.numberOfRectanglesValue.textContent = this.value;
+      onChange();
+    });
 
     el.distanceFromCenter.addEventListener("input", function () {
       el.distanceFromCenterValue.textContent = this.value;

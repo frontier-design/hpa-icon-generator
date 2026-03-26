@@ -120,6 +120,8 @@
   user-select: none;
   -webkit-user-select: none;
   text-align: center;
+  container-type: inline-size;
+  container-name: sheet-header;
 }
 
 .bottom-sheet__header:active {
@@ -137,7 +139,10 @@
 /* Title: hide moves down + fade; show opens height first, then fade/slide in (avoids “pop”) */
 .bottom-sheet__title {
   margin: 0;
-  font-size: 22px;
+  width: 100%;
+  max-width: 100%;
+  /* Scale with panel width; larger cap + cqi so title reads bigger on all breakpoints */
+  font-size: clamp(1rem, 9.5cqi, 1.75rem);
   color: #170901;
   font-family: 'EK Notice Classic', sans-serif;
   overflow: hidden;
@@ -261,14 +266,16 @@
 }
 
 .slider-container {
-  display: flex;
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) 4.5rem;
   align-items: center;
   gap: 10px;
 }
 
-/* Custom range sliders */
+/* Custom range sliders — same track width every row (value column is fixed) */
 .slider-container input[type="range"] {
-  flex: 1;
+  width: 100%;
+  min-width: 0;
   -webkit-appearance: none;
   appearance: none;
   height: 6px;
@@ -312,11 +319,13 @@
 .slider-container .value-display {
   font-size: 11px;
   color: #51382D;
-  width: fit-content;
-  text-align: left;
+  width: 100%;
+  box-sizing: border-box;
+  text-align: right;
   background: rgba(217, 207, 191, 0.4);
   padding: 3px 8px;
   border-radius: 4px;
+  justify-self: end;
 }
 
 .select-wrapper {

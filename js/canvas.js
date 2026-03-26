@@ -303,7 +303,9 @@
     fillMode = event.detail.fillMode || "solid";
     rectWidth = event.detail.rectWidth;
     rectHeight = event.detail.rectHeight;
-    numberOfRectangles = event.detail.numberOfRectangles;
+    var nRect = Math.round(Number(event.detail.numberOfRectangles));
+    if (isNaN(nRect)) nRect = 9;
+    numberOfRectangles = Math.min(25, Math.max(5, nRect));
     distanceFromCenter = event.detail.distanceFromCenter;
     rotationSpeed = event.detail.rotationSpeed;
     shapePreset = event.detail.shapePreset;
