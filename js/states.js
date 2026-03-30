@@ -254,7 +254,7 @@ window.RA.states = (function () {
     var stateB = states[(currentSegmentIndex + 1) % states.length];
     var interpolated = interpolateStates(stateA, stateB, t);
 
-    interpolated.rotationSpeed = 0.05;
+    interpolated.rotationSpeed = 0.025;
 
     callbacks.dispatchState(interpolated);
     callbacks.syncDisplay(interpolated);
