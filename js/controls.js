@@ -17,6 +17,14 @@ window.RA.controls = (function () {
       </div>
     </div>
 
+    <div class="control-group control-group--rays">
+      <label for="numberOfRectangles">Number of Rays</label>
+      <div class="slider-container">
+        <input type="range" id="numberOfRectangles" min="5" max="25" step="1" value="9">
+        <div class="value-display"><span id="numberOfRectanglesValue">9</span> rays</div>
+      </div>
+    </div>
+
     <div class="control-group">
       <label for="shapePreset">Shape Preset</label>
       <div class="select-wrapper">
@@ -26,19 +34,10 @@ window.RA.controls = (function () {
           <option value="topLeftDown">Angled</option>
         </select>
       </div>
-      <button type="button" class="randomise-btn" id="randomiseBtn">Randomize</button>
     </div>
 
     <div class="control-group">
-      <label for="numberOfRectangles">Number of Rectangles</label>
-      <div class="slider-container">
-        <input type="range" id="numberOfRectangles" min="5" max="25" step="1" value="9">
-        <div class="value-display"><span id="numberOfRectanglesValue">9</span></div>
-      </div>
-    </div>
-
-    <div class="control-group">
-      <label for="rectWidth">Rectangle Width</label>
+      <label for="rectWidth">Ray Width</label>
       <div class="slider-container">
         <input type="range" id="rectWidth" min="10" max="130" value="25">
         <div class="value-display"><span id="rectWidthValue">25</span>px</div>
@@ -46,7 +45,7 @@ window.RA.controls = (function () {
     </div>
 
     <div class="control-group">
-      <label for="rectHeight">Rectangle Height</label>
+      <label for="rectHeight">Ray Height</label>
       <div class="slider-container">
         <input type="range" id="rectHeight" min="10" max="345" value="200">
         <div class="value-display"><span id="rectHeightValue">200</span>px</div>
@@ -79,6 +78,11 @@ window.RA.controls = (function () {
 
     <div class="control-group">
       <button type="button" id="addStateBtn">Add state</button>
+      <button type="button" class="randomise-btn" id="randomiseBtn">Randomize</button>
+      <div class="undo-redo-row">
+        <button type="button" id="undoBtn" disabled>Undo</button>
+        <button type="button" id="redoBtn" disabled>Redo</button>
+      </div>
     </div>
       </div>
     </div>
@@ -167,7 +171,7 @@ window.RA.controls = (function () {
     return Math.min(m, Math.max(0, v));
   }
 
-  /** Keep taper slider max and value ≤ half of rectangle width (px). */
+  /** Keep taper slider max and value ≤ half of ray width (px). */
   function syncTaperToWidth() {
     var rw = clampRectWidth(el.rectWidth.value);
     var m = maxTaperForWidth(rw);
@@ -177,7 +181,7 @@ window.RA.controls = (function () {
     el.taperAmountValue.textContent = t;
   }
 
-  /** Angled preset: corner offset must be strictly less than rectangle height (max = height − 1 px). */
+  /** Angled preset: corner offset must be strictly less than ray height (max = height − 1 px). */
   function maxCornerForHeight(heightPx) {
     var h = clampRectHeight(heightPx);
     return Math.max(0, h - 1);
@@ -306,6 +310,7 @@ window.RA.controls = (function () {
     panel.querySelectorAll("input, select, button").forEach(function (input) {
       if (
         input.id === "addStateBtn" ||
+        input.id === "numberOfRectangles" ||
         input.classList.contains("color-swatch")
       )
         return;

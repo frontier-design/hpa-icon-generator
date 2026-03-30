@@ -213,7 +213,7 @@ window.RA.states = (function () {
         shapePresetLabel(state.shapePreset) +
         " / " +
         state.numberOfRectangles +
-        "r";
+        " rays";
 
       var deleteBtn = document.createElement("button");
       deleteBtn.className = "state-delete";
@@ -319,9 +319,16 @@ window.RA.states = (function () {
     return isPlaying;
   }
 
+  function syncRingCount(n) {
+    for (var i = 0; i < states.length; i++) {
+      states[i].numberOfRectangles = n;
+    }
+  }
+
   return {
     init: init,
     addState: addState,
     getIsPlaying: getIsPlaying,
+    syncRingCount: syncRingCount,
   };
 })();

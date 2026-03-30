@@ -301,7 +301,7 @@
     }
   };
 
-  window.addEventListener("updateRectangles", function (event) {
+  window.addEventListener("updateRays", function (event) {
     rectWidth = Math.min(130, Math.max(10, Number(event.detail.rectWidth) || 25));
     rectHeight = Math.min(
       345,

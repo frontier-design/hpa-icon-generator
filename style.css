@@ -363,6 +363,13 @@
   margin-bottom: 15px;
 }
 
+.control-group--rays {
+  background: rgba(217, 207, 191, 0.3);
+  padding: 12px;
+  border-radius: 8px;
+  border: none;
+}
+
 .control-group label {
   display: block;
   font-family: var(--sheet-ui-font);
@@ -542,6 +549,27 @@
 
 .control-group .randomise-btn {
   margin-top: 12px;
+}
+
+.undo-redo-row {
+  display: flex;
+  gap: 8px;
+  margin-top: 12px;
+}
+
+.undo-redo-row button {
+  flex: 1;
+}
+
+.undo-redo-row button:disabled {
+  opacity: 0.35;
+  cursor: default;
+}
+
+.undo-redo-row button:disabled:hover {
+  background: #F7F3EB;
+  border-color: #D9CFBF;
+  color: var(--sheet-ui-color);
 }
 
 /* Color swatches */
