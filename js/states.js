@@ -254,8 +254,6 @@ window.RA.states = (function () {
     var stateB = states[(currentSegmentIndex + 1) % states.length];
     var interpolated = interpolateStates(stateA, stateB, t);
 
-    interpolated.rotationSpeed = 0.025;
-
     callbacks.dispatchState(interpolated);
     callbacks.syncDisplay(interpolated);
     highlightStateCard(
@@ -279,6 +277,7 @@ window.RA.states = (function () {
     playBtn.textContent = "Playing...";
     stopBtn.disabled = false;
     callbacks.setDisabled(true);
+    window.dispatchEvent(new CustomEvent("playbackStarted"));
     playbackRafId = requestAnimationFrame(playbackFrame);
   }
 
@@ -292,6 +291,7 @@ window.RA.states = (function () {
     playBtn.textContent = "Play";
     stopBtn.disabled = true;
     callbacks.setDisabled(false);
+    window.dispatchEvent(new CustomEvent("playbackStopped"));
     callbacks.dispatchState(callbacks.snapshot());
   }
 

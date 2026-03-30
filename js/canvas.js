@@ -12,6 +12,7 @@
   var distanceFromCenter = 60;
   var rotationSpeed = 0;
   var cumulativeRotation = 0;
+  var isRotating = false;
   var shapePreset = "vertical";
   var taperAmount = 7;
   var cornerOffset = 10;
@@ -293,9 +294,10 @@
   };
 
   view.onFrame = function () {
-    cumulativeRotation += rotationSpeed;
+    if (!isRotating) return;
+    cumulativeRotation += 0.025;
     for (var i = 0; i < rectangles.length; i++) {
-      rectangles[i].rotate(rotationSpeed, rotationCenter);
+      rectangles[i].rotate(0.025, rotationCenter);
     }
   };
 
@@ -311,11 +313,7 @@
     var distRaw = Number(event.detail.distanceFromCenter);
     if (isNaN(distRaw)) distRaw = 60;
     distanceFromCenter = Math.min(150, Math.max(0, distRaw));
-    var newSpeed = event.detail.rotationSpeed;
-    if (newSpeed === 0 && rotationSpeed !== 0) {
-      cumulativeRotation = 0;
-    }
-    rotationSpeed = newSpeed;
+    rotationSpeed = event.detail.rotationSpeed;
     shapePreset = event.detail.shapePreset;
     var taperRaw = Number(event.detail.taperAmount);
     if (isNaN(taperRaw)) taperRaw = 7;
@@ -333,5 +331,15 @@
   window.addEventListener("sheetLayout", function () {
     createRectangles();
     applyRotation();
+  });
+
+  window.addEventListener("playbackStarted", function () {
+    isRotating = true;
+    cumulativeRotation = 0;
+  });
+
+  window.addEventListener("playbackStopped", function () {
+    isRotating = false;
+    cumulativeRotation = 0;
   });
 })();
