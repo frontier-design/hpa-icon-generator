@@ -152,10 +152,7 @@ window.RA.states = (function () {
     var cornersA = getCornerOffsets(stateA);
     var cornersB = getCornerOffsets(stateB);
     var corners = cornersA.map(function (ca, i) {
-      return [
-        lerp(ca[0], cornersB[i][0], et),
-        lerp(ca[1], cornersB[i][1], et),
-      ];
+      return [lerp(ca[0], cornersB[i][0], et), lerp(ca[1], cornersB[i][1], et)];
     });
 
     return {
@@ -163,12 +160,12 @@ window.RA.states = (function () {
       rectWidth: lerp(stateA.rectWidth, stateB.rectWidth, et),
       rectHeight: lerp(stateA.rectHeight, stateB.rectHeight, et),
       numberOfRectangles: Math.round(
-        lerp(stateA.numberOfRectangles, stateB.numberOfRectangles, et)
+        lerp(stateA.numberOfRectangles, stateB.numberOfRectangles, et),
       ),
       distanceFromCenter: lerp(
         stateA.distanceFromCenter,
         stateB.distanceFromCenter,
-        et
+        et,
       ),
       rotationSpeed: lerp(stateA.rotationSpeed, stateB.rotationSpeed, et),
       shapePreset: t < 0.5 ? stateA.shapePreset : stateB.shapePreset,
@@ -213,7 +210,10 @@ window.RA.states = (function () {
       var info = document.createElement("span");
       info.className = "state-info";
       info.textContent =
-        shapePresetLabel(state.shapePreset) + " / " + state.numberOfRectangles + "r";
+        shapePresetLabel(state.shapePreset) +
+        " / " +
+        state.numberOfRectangles +
+        "r";
 
       var deleteBtn = document.createElement("button");
       deleteBtn.className = "state-delete";
@@ -254,12 +254,12 @@ window.RA.states = (function () {
     var stateB = states[(currentSegmentIndex + 1) % states.length];
     var interpolated = interpolateStates(stateA, stateB, t);
 
+    interpolated.rotationSpeed = 0.05;
+
     callbacks.dispatchState(interpolated);
     callbacks.syncDisplay(interpolated);
     highlightStateCard(
-      t < 0.5
-        ? currentSegmentIndex
-        : (currentSegmentIndex + 1) % states.length
+      t < 0.5 ? currentSegmentIndex : (currentSegmentIndex + 1) % states.length,
     );
 
     if (t >= 1) {

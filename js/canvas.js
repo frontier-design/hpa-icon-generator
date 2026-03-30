@@ -11,6 +11,7 @@
   var rotationCenter = view.center;
   var distanceFromCenter = 60;
   var rotationSpeed = 0;
+  var cumulativeRotation = 0;
   var shapePreset = "vertical";
   var taperAmount = 7;
   var cornerOffset = 10;
@@ -278,17 +279,21 @@
     circles.push(centerMarker);
   }
 
+  function applyRotation() {
+    for (var i = 0; i < rectangles.length; i++) {
+      rectangles[i].rotate(cumulativeRotation, rotationCenter);
+    }
+  }
+
   createRectangles();
 
   view.onResize = function () {
     createRectangles();
+    applyRotation();
   };
 
   view.onFrame = function () {
-    if (rectangles.length === 1) {
-      rectangles[0].rotate(rotationSpeed, rotationCenter);
-      return;
-    }
+    cumulativeRotation += rotationSpeed;
     for (var i = 0; i < rectangles.length; i++) {
       rectangles[i].rotate(rotationSpeed, rotationCenter);
     }
@@ -306,7 +311,11 @@
     var distRaw = Number(event.detail.distanceFromCenter);
     if (isNaN(distRaw)) distRaw = 60;
     distanceFromCenter = Math.min(150, Math.max(0, distRaw));
-    rotationSpeed = event.detail.rotationSpeed;
+    var newSpeed = event.detail.rotationSpeed;
+    if (newSpeed === 0 && rotationSpeed !== 0) {
+      cumulativeRotation = 0;
+    }
+    rotationSpeed = newSpeed;
     shapePreset = event.detail.shapePreset;
     var taperRaw = Number(event.detail.taperAmount);
     if (isNaN(taperRaw)) taperRaw = 7;
@@ -318,9 +327,11 @@
     cornerOffset = Math.min(Math.max(0, cornerRaw), cornerMax);
     corners = event.detail.corners || null;
     createRectangles();
+    applyRotation();
   });
 
   window.addEventListener("sheetLayout", function () {
     createRectangles();
+    applyRotation();
   });
 })();
