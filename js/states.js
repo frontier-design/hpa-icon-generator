@@ -292,6 +292,7 @@ window.RA.states = (function () {
     playBtn.textContent = "Play";
     stopBtn.disabled = true;
     callbacks.setDisabled(false);
+    callbacks.dispatchState(callbacks.snapshot());
   }
 
   // ── Public API ──
