@@ -137,7 +137,7 @@
   }
 
   .bottom-sheet .bottom-sheet__body {
-    padding: 20px 20px 48px;
+    padding: 20px 20px 20px;
   }
 }
 
@@ -274,7 +274,7 @@
   display: flex;
   flex-direction: column;
   overflow: hidden;
-  padding: 16px 20px 40px;
+  padding: 16px 20px 20px;
   overscroll-behavior: contain;
 }
 
@@ -302,7 +302,7 @@
 
 @supports (padding-bottom: env(safe-area-inset-bottom)) {
   .bottom-sheet__body {
-    padding-bottom: calc(40px + env(safe-area-inset-bottom));
+    padding-bottom: calc(20px + env(safe-area-inset-bottom));
   }
 }
 
@@ -357,6 +357,12 @@
   overflow-y: auto;
   -webkit-overflow-scrolling: touch;
   overscroll-behavior: contain;
+  scrollbar-width: none;
+  -ms-overflow-style: none;
+}
+
+.control-panel__main::-webkit-scrollbar {
+  display: none;
 }
 
 .control-group {
@@ -494,6 +500,18 @@
 .control-group select:focus {
   outline: none;
   background: rgba(217, 207, 191, 0.6);
+}
+
+/* Reserve one slider row so Add state / Randomize / Undo don’t jump when preset changes */
+.preset-params-slot {
+  margin-bottom: 15px;
+  min-height: calc(
+    0.8125rem * var(--sheet-ui-line) + 6px + 28px
+  );
+}
+
+.preset-params-slot .preset-param {
+  margin-bottom: 0;
 }
 
 .control-group.preset-param {

@@ -60,19 +60,21 @@ window.RA.controls = (function () {
       </div>
     </div>
 
-    <div class="control-group preset-param" data-visible-for="tapered">
-      <label for="taperAmount">Taper amount</label>
-      <div class="slider-container">
-        <input type="range" id="taperAmount" min="0" max="80" value="7">
-        <div class="value-display"><span id="taperAmountValue">7</span>px</div>
+    <div class="preset-params-slot">
+      <div class="control-group preset-param" data-visible-for="tapered">
+        <label for="taperAmount">Taper amount</label>
+        <div class="slider-container">
+          <input type="range" id="taperAmount" min="0" max="80" value="7">
+          <div class="value-display"><span id="taperAmountValue">7</span>px</div>
+        </div>
       </div>
-    </div>
 
-    <div class="control-group preset-param" data-visible-for="topLeftDown">
-      <label for="cornerOffset">Corner offset</label>
-      <div class="slider-container">
-        <input type="range" id="cornerOffset" min="0" max="80" value="10">
-        <div class="value-display"><span id="cornerOffsetValue">10</span>px</div>
+      <div class="control-group preset-param" data-visible-for="topLeftDown">
+        <label for="cornerOffset">Corner offset</label>
+        <div class="slider-container">
+          <input type="range" id="cornerOffset" min="0" max="80" value="10">
+          <div class="value-display"><span id="cornerOffsetValue">10</span>px</div>
+        </div>
       </div>
     </div>
 
@@ -252,7 +254,10 @@ window.RA.controls = (function () {
       rotationSpeed: 0,
       shapePreset: el.shapePreset.value,
       taperAmount: clampTaperAmount(el.taperAmount.value, el.rectWidth.value),
-      cornerOffset: clampCornerOffset(el.cornerOffset.value, el.rectHeight.value),
+      cornerOffset: clampCornerOffset(
+        el.cornerOffset.value,
+        el.rectHeight.value,
+      ),
     };
   }
 
@@ -357,10 +362,12 @@ window.RA.controls = (function () {
       onChange();
     });
 
-    document.getElementById("randomiseBtn").addEventListener("click", function () {
-      applyRandomParameters();
-      onChange();
-    });
+    document
+      .getElementById("randomiseBtn")
+      .addEventListener("click", function () {
+        applyRandomParameters();
+        onChange();
+      });
 
     el.taperAmount.addEventListener("input", function () {
       el.taperAmountValue.textContent = this.value;
