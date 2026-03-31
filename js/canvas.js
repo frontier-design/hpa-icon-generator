@@ -245,6 +245,19 @@
           petals[r].remove();
         }
 
+        // Clean up micro-segments left by floating-point imprecision in unite().
+        // These appear as tiny triangular nubs on some machines.
+        var segs = united.segments;
+        if (segs) {
+          for (var s = segs.length - 1; s >= 0; s--) {
+            var curr = segs[s].point;
+            var next = segs[(s + 1) % segs.length].point;
+            if (curr.getDistance(next) < 1) {
+              segs[s].remove();
+            }
+          }
+        }
+
         var outerR = estimateOuterRadius(
           shapePreset, rectWidth, rectHeight, distanceFromCenter,
           taperAmount, cornerOffset, corners
