@@ -233,40 +233,14 @@
 
     if (petals.length > 0) {
       try {
-        var united = petals[0];
-        for (var j = 1; j < petals.length; j++) {
-          var prev = united;
-          united = prev.unite(petals[j]);
-          if (prev !== petals[0]) {
-            prev.remove();
-          }
-        }
-        for (var r = 0; r < petals.length; r++) {
-          petals[r].remove();
-        }
-
-        // Clean up micro-segments and stray handles left by floating-point
-        // imprecision in unite(). Visible as tiny nubs on some GPUs (AMD).
-        var segs = united.segments;
-        if (segs) {
-          // Pass 1: remove micro-edges (< 2px)
-          for (var s = segs.length - 1; s >= 0; s--) {
-            var curr = segs[s].point;
-            var next = segs[(s + 1) % segs.length].point;
-            if (curr.getDistance(next) < 2) {
-              segs[s].remove();
-            }
-          }
-          // Pass 2: flatten any tiny curve handles that unite() introduced
-          segs = united.segments;
-          for (var s = 0; s < segs.length; s++) {
-            if (segs[s].handleIn.length < 2) {
-              segs[s].handleIn = new Point(0, 0);
-            }
-            if (segs[s].handleOut.length < 2) {
-              segs[s].handleOut = new Point(0, 0);
-            }
-          }
+        // Use CompoundPath instead of unite() to avoid boolean-operation
+        // artifacts (tiny nubs at corners visible on some GPUs).
+        var compound = new paper.CompoundPath({
+          fillRule: "nonzero",
+          fillColor: "#FEB36B",
+        });
+        for (var p = 0; p < petals.length; p++) {
+          compound.addChild(petals[p]);
         }
 
         var outerR = estimateOuterRadius(
@@ -283,8 +257,8 @@
         );
         foilRaster.scale(imgScale);
 
-        united.clipMask = true;
-        var masked = new paper.Group([united, foilRaster]);
+        compound.clipMask = true;
+        var masked = new paper.Group([compound, foilRaster]);
         masked.clipped = true;
         rectangles.push(masked);
       } catch (err) {
