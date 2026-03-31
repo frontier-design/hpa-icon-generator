@@ -245,15 +245,26 @@
           petals[r].remove();
         }
 
-        // Clean up micro-segments left by floating-point imprecision in unite().
-        // These appear as tiny triangular nubs on some machines.
+        // Clean up micro-segments and stray handles left by floating-point
+        // imprecision in unite(). Visible as tiny nubs on some GPUs (AMD).
         var segs = united.segments;
         if (segs) {
+          // Pass 1: remove micro-edges (< 2px)
           for (var s = segs.length - 1; s >= 0; s--) {
             var curr = segs[s].point;
             var next = segs[(s + 1) % segs.length].point;
-            if (curr.getDistance(next) < 1) {
+            if (curr.getDistance(next) < 2) {
               segs[s].remove();
+            }
+          }
+          // Pass 2: flatten any tiny curve handles that unite() introduced
+          segs = united.segments;
+          for (var s = 0; s < segs.length; s++) {
+            if (segs[s].handleIn.length < 2) {
+              segs[s].handleIn = new Point(0, 0);
+            }
+            if (segs[s].handleOut.length < 2) {
+              segs[s].handleOut = new Point(0, 0);
             }
           }
         }
