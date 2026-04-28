@@ -316,13 +316,13 @@ window.RA.emailSignature = (function () {
     var encoder = new MiniGIF.Encoder(gifSize, gifSize);
 
     if (statesArr.length >= 2) {
-      var fps = 8;
+      var fps = 15;
       var segDurationMs = 3000;
       var totalSegments = statesArr.length;
       var framesPerSeg = Math.round((segDurationMs / 1000) * fps);
       var totalFrames = framesPerSeg * totalSegments;
-      if (totalFrames > 20) {
-        framesPerSeg = Math.max(3, Math.floor(20 / totalSegments));
+      if (totalFrames > 45) {
+        framesPerSeg = Math.max(5, Math.floor(45 / totalSegments));
         totalFrames = framesPerSeg * totalSegments;
       }
       var frameDelay = segDurationMs / framesPerSeg;
