@@ -150,7 +150,8 @@
 
 /* ── Email Signature Preview ── */
 
-.sig-preview {
+.sig-preview,
+.wallpaper-preview {
   display: none;
   position: fixed;
   top: 0;
@@ -162,15 +163,137 @@
   z-index: 1;
 }
 
-.sig-preview.active {
+.sig-preview.active,
+.wallpaper-preview.active {
   display: flex;
 }
 
 /* On desktop, offset for sidebar */
 @media (min-width: 1024px) {
-  .sig-preview {
+  .sig-preview,
+  .wallpaper-preview {
     left: min(400px, 32vw);
   }
+}
+
+.wallpaper-preview__inner {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  width: 100%;
+  height: 100%;
+  padding: 40px;
+  box-sizing: border-box;
+}
+
+.wallpaper-ratios {
+  display: flex;
+  gap: 8px;
+}
+
+.wallpaper-ratios__btn {
+  padding: 8px 16px;
+  border: 1px solid #D9CFBF;
+  border-radius: 6px;
+  background: #F7F3EB;
+  font-family: 'EK Notice Classic', sans-serif;
+  font-size: 0.75rem;
+  line-height: 1.35;
+  color: #3B2314;
+  cursor: pointer;
+  transition: background 0.15s, border-color 0.15s;
+}
+
+.wallpaper-ratios__btn:hover {
+  background: #EDE7DB;
+}
+
+.wallpaper-ratios__btn.active {
+  background: #3B2314;
+  color: #F7F3EB;
+  border-color: #3B2314;
+}
+
+.wallpaper-canvas-wrap {
+  flex: 1;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  width: 100%;
+  min-height: 0;
+}
+
+.wallpaper-canvas {
+  display: block;
+  border: 1px solid #D9CFBF;
+}
+
+.placement-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  grid-template-rows: repeat(3, 1fr);
+  width: 100%;
+  aspect-ratio: 16 / 9;
+  background: #EDE7DB;
+  border-radius: 6px;
+  border: 1px solid #D9CFBF;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+.placement-dot {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border: none;
+  background: none;
+  cursor: pointer;
+  padding: 0;
+}
+
+.placement-dot::after {
+  content: '';
+  width: 7px;
+  height: 7px;
+  border-radius: 50%;
+  background: #B8AD9E;
+  transition: background 0.15s, transform 0.15s, box-shadow 0.15s;
+}
+
+.placement-dot:hover {
+  background: #3B2314;
+}
+
+.placement-dot:hover::after {
+  background: #F7F3EB;
+  transform: scale(1.4);
+}
+
+.placement-dot.active {
+  background: #3B2314;
+}
+
+.placement-dot.active::after {
+  background: #F7F3EB;
+  transform: scale(1.3);
+}
+
+.placement-dot.inactive {
+  cursor: default;
+}
+
+.placement-dot.inactive::after {
+  background: #C8BFAF;
+}
+
+.placement-dot.inactive:hover {
+  background: none;
+}
+
+.placement-dot.inactive:hover::after {
+  background: #C8BFAF;
+  transform: none;
 }
 
 .sig-preview__card {

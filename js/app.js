@@ -6,6 +6,7 @@ window.RA = window.RA || {};
   nav.innerHTML = [
     '<button class="tool-nav__btn active" data-tool="florette">Florette</button>',
     '<button class="tool-nav__btn" data-tool="email-sig">Email Signature</button>',
+    '<button class="tool-nav__btn" data-tool="wallpaper">Wallpaper</button>',
   ].join("\n");
   document.body.appendChild(nav);
 
@@ -16,12 +17,15 @@ window.RA = window.RA || {};
   var florStates = document.getElementById("sheet-states");
   var emailSig = document.getElementById("sheet-email-sig");
   var sigPreview = document.querySelector(".sig-preview");
+  var wallpaperPreview = document.querySelector(".wallpaper-preview");
+  var wallpaperPanel = document.getElementById("sheet-wallpaper");
   var subtitle = document.querySelector(".bottom-sheet__subtitle");
   var bgColorGroup = florControls.querySelector(".color-swatches").closest(".control-group");
 
   var toolNames = {
     florette: "The Florette Tool",
     "email-sig": "Email Signature",
+    wallpaper: "Wallpaper",
   };
 
   var savedBgColor = document.body.style.backgroundColor || "";
@@ -32,23 +36,35 @@ window.RA = window.RA || {};
     });
 
     var isFlorette = toolId === "florette";
+    var isEmailSig = toolId === "email-sig";
+    var isWallpaper = toolId === "wallpaper";
 
     // Show/hide canvas
     canvas.style.display = isFlorette ? "" : "none";
 
-    // Tabs, controls, and animation visible on both tools
-    florTabs.style.display = "";
-    florControls.style.display = "";
-    florStates.style.display = "";
+    // Florette controls/tabs/states: visible on florette and email sig, hidden on wallpaper
+    var showFloretteUI = isFlorette || isEmailSig;
+    florTabs.style.display = showFloretteUI ? "" : "none";
+    florControls.style.display = showFloretteUI ? "" : "none";
+    florStates.style.display = showFloretteUI ? "" : "none";
 
-    // Hide background color on email sig, show on florette
+    // Wallpaper panel: visible only on wallpaper tab
+    wallpaperPanel.style.display = isWallpaper ? "" : "none";
+    wallpaperPanel.classList.toggle("active", isWallpaper);
+
+    // Hide background color on non-florette tools
     bgColorGroup.style.display = isFlorette ? "" : "none";
 
     // Show/hide email signature
-    emailSig.classList.toggle("active", toolId === "email-sig");
-    sigPreview.classList.toggle("active", toolId === "email-sig");
+    emailSig.classList.toggle("active", isEmailSig);
+    sigPreview.classList.toggle("active", isEmailSig);
 
-    if (toolId === "email-sig") {
+    // Show/hide wallpaper
+    if (wallpaperPreview) {
+      wallpaperPreview.classList.toggle("active", isWallpaper);
+    }
+
+    if (isEmailSig) {
       window.dispatchEvent(new CustomEvent("sigVisible"));
     } else {
       window.dispatchEvent(new CustomEvent("sigHidden"));
