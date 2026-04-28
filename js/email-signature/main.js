@@ -239,7 +239,7 @@ window.RA.emailSignature = (function () {
 
   function renderAddressToPng() {
     var scale = 3; // 3x for retina sharpness
-    var fontSize = 16 * scale;
+    var fontSize = 20 * scale;
     var lineHeight = fontSize * 1.6;
     var cw = 560 * scale;
     var ch = Math.ceil(lineHeight + 4 * scale);
@@ -283,7 +283,7 @@ window.RA.emailSignature = (function () {
 
   function renderUrlToPng() {
     var scale = 3;
-    var fontSize = 16 * scale;
+    var fontSize = 20 * scale;
     var lineHeight = fontSize * 1.6;
     var cw = 560 * scale;
     var ch = Math.ceil(lineHeight + 4 * scale);
