@@ -93,6 +93,8 @@ window.RA.emailSignature = (function () {
 
   function drawStateToCtx(tCtx, sz, state, rot) {
     tCtx.clearRect(0, 0, sz, sz);
+    tCtx.fillStyle = "#ffffff";
+    tCtx.fillRect(0, 0, sz, sz);
     var corners = state.corners;
     var count = state.numberOfRectangles || 9;
     if (!corners) corners = window.RA.states.getCornerOffsets(state);

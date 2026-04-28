@@ -83,7 +83,7 @@ var MiniGIF = (function () {
 
       // Graphic Control Extension
       buf.push(0x21, 0xF9, 0x04);
-      buf.push(0x09); // dispose to bg + transparency
+      buf.push(0x00); // no disposal, no transparency
       writeU16(buf, Math.round(frame.delay / 10));
       buf.push(255); // transparent index
       buf.push(0x00);
