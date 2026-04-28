@@ -221,7 +221,6 @@ var MiniGIF = (function () {
     var maxCode = 1 << codeSize;
 
     var table = {};
-    for (var i = 0; i < clearCode; i++) table[i] = i;
 
     var output = [];
     var bitBuf = 0, bitPos = 0;
@@ -263,7 +262,6 @@ var MiniGIF = (function () {
           nextCode = eoiCode + 1;
           maxCode = 1 << codeSize;
           table = {};
-          for (var j = 0; j < clearCode; j++) table[j] = j;
         }
         current = px;
       }
