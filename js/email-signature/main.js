@@ -454,7 +454,9 @@ window.RA.emailSignature = (function () {
     navigator.clipboard.write([clipItem]).then(function () {
       var orig = copySigBtn.textContent;
       copySigBtn.textContent = "Copied!";
-      setTimeout(function () { copySigBtn.textContent = orig; }, 2000);
+      setTimeout(function () {
+        copySigBtn.textContent = orig;
+      }, 2000);
     });
   });
 
