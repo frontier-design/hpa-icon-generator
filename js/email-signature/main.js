@@ -242,7 +242,7 @@ window.RA.emailSignature = (function () {
     var fontSize = 14 * scale;
     var lineHeight = fontSize * 1.6;
     var cw = 500 * scale;
-    var ch = Math.ceil(lineHeight * 2 + 4 * scale);
+    var ch = Math.ceil(lineHeight + 4 * scale);
 
     var c = document.createElement("canvas");
     c.width = cw;
@@ -269,10 +269,6 @@ window.RA.emailSignature = (function () {
     ax.font = fontSize + "px Bradford, Georgia, serif";
     var part3 = "TORONTO, CANADA M4M 2S1";
     ax.fillText(part3, x, y);
-
-    // Line 2: www.hariripontarini.com
-    ax.font = fontSize + "px Bradford, Georgia, serif";
-    ax.fillText("www.hariripontarini.com", 0, lineHeight);
 
     // Fill white background for JPEG (no transparency)
     var out = document.createElement("canvas");
@@ -322,12 +318,12 @@ window.RA.emailSignature = (function () {
 
     if (statesArr.length >= 2) {
       var fps = 15;
-      var segDurationMs = 3000;
+      var segDurationMs = window.RA.states.TRANSITION_DURATION_MS;
       var totalSegments = statesArr.length;
       var framesPerSeg = Math.round((segDurationMs / 1000) * fps);
       var totalFrames = framesPerSeg * totalSegments;
-      if (totalFrames > 45) {
-        framesPerSeg = Math.max(5, Math.floor(45 / totalSegments));
+      if (totalFrames > 180) {
+        framesPerSeg = Math.max(10, Math.floor(180 / totalSegments));
         totalFrames = framesPerSeg * totalSegments;
       }
       var frameDelay = segDurationMs / framesPerSeg;
@@ -402,7 +398,12 @@ window.RA.emailSignature = (function () {
               "    <td>",
               '      <img src="' +
                 addressDataUri +
-                '" width="500" alt="235 Carlaw Av., Suite 301, Toronto, Canada M4M 2S1 — www.hariripontarini.com" style="display:block;height:auto;" />',
+                '" width="500" alt="235 Carlaw Av., Suite 301, Toronto, Canada M4M 2S1" style="display:block;height:auto;" />',
+              "    </td>",
+              "  </tr>",
+              "  <tr>",
+              '    <td style="padding-top: 4px;">',
+              '      <a href="https://www.hariripontarini.com" style="color:#3B2314;font-family:Georgia,serif;font-size:14px;text-decoration:none;">www.hariripontarini.com</a>',
               "    </td>",
               "  </tr>",
               "</table>",
@@ -427,6 +428,9 @@ window.RA.emailSignature = (function () {
               '    <img src="' +
                 addressDataUri +
                 '" width="350" style="display:block;height:auto;" />',
+              "  </td></tr>",
+              '  <tr><td style="padding-top:4px;">',
+              '    <a href="https://www.hariripontarini.com" style="color:#3B2314;font-family:Georgia,serif;font-size:14px;text-decoration:none;">www.hariripontarini.com</a>',
               "  </td></tr>",
               "</table>",
             ].join("");
