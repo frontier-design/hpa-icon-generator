@@ -281,6 +281,33 @@ window.RA.emailSignature = (function () {
     return out.toDataURL("image/jpeg", 0.95);
   }
 
+  function renderUrlToPng() {
+    var scale = 3;
+    var fontSize = 14 * scale;
+    var lineHeight = fontSize * 1.6;
+    var c = document.createElement("canvas");
+    var ax = c.getContext("2d");
+    ax.font = fontSize + "px Bradford, Georgia, serif";
+    var text = "www.hariripontarini.com";
+    var tw = Math.ceil(ax.measureText(text).width + 4 * scale);
+    c.width = tw;
+    c.height = Math.ceil(lineHeight);
+    ax = c.getContext("2d");
+    ax.fillStyle = "#3B2314";
+    ax.textBaseline = "top";
+    ax.font = fontSize + "px Bradford, Georgia, serif";
+    ax.fillText(text, 0, 0);
+
+    var out = document.createElement("canvas");
+    out.width = tw;
+    out.height = c.height;
+    var ox = out.getContext("2d");
+    ox.fillStyle = "#ffffff";
+    ox.fillRect(0, 0, tw, c.height);
+    ox.drawImage(c, 0, 0);
+    return { dataUri: out.toDataURL("image/jpeg", 0.95), width: Math.round(tw / scale) };
+  }
+
   // ── Export ──
 
   var generateBtn = document.getElementById("sigGenerateBtn");
@@ -368,8 +395,9 @@ window.RA.emailSignature = (function () {
         .then(function (data) {
           var gifUrl = data.url;
 
-          // Render address text as PNG in Bradford
+          // Render address and URL text as images in Bradford
           var addressDataUri = renderAddressToPng();
+          var urlImg = renderUrlToPng();
 
           // Render logo SVG to PNG
           renderLogoToJpeg(function (logoDataUri) {
@@ -387,7 +415,7 @@ window.RA.emailSignature = (function () {
               "    </td>",
               "  </tr>",
               "  <tr>",
-              '    <td style="padding-top: 30px; padding-bottom: 5px;">',
+              '    <td style="padding-top: 30px; padding-bottom: 12px;">',
               '      <img src="' +
                 gifUrl +
                 '" width="30" height="30" alt="" style="display:block;" />',
@@ -402,7 +430,9 @@ window.RA.emailSignature = (function () {
               "  </tr>",
               "  <tr>",
               "    <td>",
-              '      <a href="https://www.hariripontarini.com" style="color:#3B2314;font-family:Georgia,serif;font-size:14px;letter-spacing:0.02em;text-decoration:none;">www.hariripontarini.com</a>',
+              '      <a href="https://www.hariripontarini.com" style="text-decoration:none;"><img src="' +
+                urlImg.dataUri +
+                '" width="' + urlImg.width + '" alt="www.hariripontarini.com" style="display:block;height:auto;" /></a>',
               "    </td>",
               "  </tr>",
               "</table>",
@@ -417,7 +447,7 @@ window.RA.emailSignature = (function () {
                 logoDataUri +
                 '" width="560" style="display:block;height:auto;" />',
               "  </td></tr>",
-              '  <tr><td style="padding-top:30px;padding-bottom:5px;">',
+              '  <tr><td style="padding-top:30px;padding-bottom:12px;">',
               '    <img src="' +
                 gifUrl +
                 '" width="30" height="30" style="display:block;" />',
@@ -428,7 +458,9 @@ window.RA.emailSignature = (function () {
                 '" width="500" style="display:block;height:auto;" />',
               "  </td></tr>",
               "  <tr><td>",
-              '    <a href="https://www.hariripontarini.com" style="color:#3B2314;font-family:Georgia,serif;font-size:14px;letter-spacing:0.02em;text-decoration:none;">www.hariripontarini.com</a>',
+              '    <a href="https://www.hariripontarini.com" style="text-decoration:none;"><img src="' +
+                urlImg.dataUri +
+                '" width="' + urlImg.width + '" alt="www.hariripontarini.com" style="display:block;height:auto;" /></a>',
               "  </td></tr>",
               "</table>",
             ].join("");
