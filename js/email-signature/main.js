@@ -155,9 +155,7 @@ window.RA.emailSignature = (function () {
     var statesArr = window.RA.states.getStates();
     cumulativeRotation += (0.025 * Math.PI) / 180;
 
-    var playing = window.RA.states.getIsPlaying();
-
-    if (playing && statesArr.length >= 2) {
+    if (statesArr.length >= 2) {
       if (segmentStart === 0) segmentStart = timestamp;
       var duration = window.RA.states.TRANSITION_DURATION_MS;
       var t = Math.min((timestamp - segmentStart) / duration, 1);
@@ -170,8 +168,8 @@ window.RA.emailSignature = (function () {
       }
     } else if (currentStaticState) {
       drawState(currentStaticState);
-    } else if (statesArr.length >= 1) {
-      drawState(statesArr[statesArr.length - 1]);
+    } else if (statesArr.length === 1) {
+      drawState(statesArr[0]);
     } else {
       drawDefault();
     }
