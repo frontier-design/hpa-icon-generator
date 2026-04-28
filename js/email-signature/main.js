@@ -241,7 +241,7 @@ window.RA.emailSignature = (function () {
     var scale = 3; // 3x for retina sharpness
     var fontSize = 14 * scale;
     var lineHeight = fontSize * 1.6;
-    var cw = 500 * scale;
+    var cw = 560 * scale;
     var ch = Math.ceil(lineHeight + 4 * scale);
 
     var c = document.createElement("canvas");
@@ -285,7 +285,7 @@ window.RA.emailSignature = (function () {
     var scale = 3;
     var fontSize = 14 * scale;
     var lineHeight = fontSize * 1.6;
-    var cw = 500 * scale;
+    var cw = 560 * scale;
     var ch = Math.ceil(lineHeight + 4 * scale);
 
     var c = document.createElement("canvas");
@@ -304,7 +304,7 @@ window.RA.emailSignature = (function () {
     ox.fillStyle = "#ffffff";
     ox.fillRect(0, 0, cw, ch);
     ox.drawImage(c, 0, 0);
-    return { dataUri: out.toDataURL("image/jpeg", 0.95), width: 500 };
+    return { dataUri: out.toDataURL("image/jpeg", 0.95), width: 560 };
   }
 
   // ── Export ──
@@ -410,7 +410,7 @@ window.RA.emailSignature = (function () {
               "    <td>",
               '      <img src="' +
                 logoDataUri +
-                '" width="560" alt="Hariri Pontarini Architects" style="display:block;height:auto;" />',
+                '" width="640" alt="Hariri Pontarini Architects" style="display:block;height:auto;" />',
               "    </td>",
               "  </tr>",
               "  <tr>",
@@ -424,7 +424,7 @@ window.RA.emailSignature = (function () {
               "    <td>",
               '      <img src="' +
                 addressDataUri +
-                '" width="500" alt="235 Carlaw Av., Suite 301, Toronto, Canada M4M 2S1" style="display:block;height:auto;" />',
+                '" width="560" alt="235 Carlaw Av., Suite 301, Toronto, Canada M4M 2S1" style="display:block;height:auto;" />',
               "    </td>",
               "  </tr>",
               "  <tr>",
@@ -444,7 +444,7 @@ window.RA.emailSignature = (function () {
               "  <tr><td>",
               '    <img src="' +
                 logoDataUri +
-                '" width="560" style="display:block;height:auto;" />',
+                '" width="640" style="display:block;height:auto;" />',
               "  </td></tr>",
               '  <tr><td style="padding-top:30px;padding-bottom:12px;">',
               '    <img src="' +
@@ -454,7 +454,7 @@ window.RA.emailSignature = (function () {
               "  <tr><td>",
               '    <img src="' +
                 addressDataUri +
-                '" width="500" style="display:block;height:auto;" />',
+                '" width="560" style="display:block;height:auto;" />',
               "  </td></tr>",
               "  <tr><td>",
               '    <a href="https://www.hariripontarini.com" style="text-decoration:none;"><img src="' +
