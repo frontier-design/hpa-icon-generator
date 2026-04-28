@@ -93,8 +93,6 @@ window.RA.emailSignature = (function () {
 
   function drawStateToCtx(tCtx, sz, state, rot) {
     tCtx.clearRect(0, 0, sz, sz);
-    tCtx.fillStyle = "#ffffff";
-    tCtx.fillRect(0, 0, sz, sz);
     var corners = state.corners;
     var count = state.numberOfRectangles || 9;
     if (!corners) corners = window.RA.states.getCornerOffsets(state);
@@ -131,6 +129,11 @@ window.RA.emailSignature = (function () {
       tCtx.globalCompositeOperation = "source-over";
     }
     tCtx.restore();
+    // Fill white behind the florette so GIF has no transparent pixels
+    tCtx.globalCompositeOperation = "destination-over";
+    tCtx.fillStyle = "#ffffff";
+    tCtx.fillRect(0, 0, sz, sz);
+    tCtx.globalCompositeOperation = "source-over";
   }
 
   function drawDefault() {
