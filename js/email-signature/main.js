@@ -410,7 +410,7 @@ window.RA.emailSignature = (function () {
               "    <td>",
               '      <img src="' +
                 logoDataUri +
-                '" width="640" alt="Hariri Pontarini Architects" style="display:block;height:auto;" />',
+                '" width="560" alt="Hariri Pontarini Architects" style="display:block;height:auto;" />',
               "    </td>",
               "  </tr>",
               "  <tr>",
@@ -446,7 +446,7 @@ window.RA.emailSignature = (function () {
               "  <tr><td>",
               '    <img src="' +
                 logoDataUri +
-                '" width="640" style="display:block;height:auto;" />',
+                '" width="560" style="display:block;height:auto;" />',
               "  </td></tr>",
               '  <tr><td style="padding-top:30px;padding-bottom:12px;">',
               '    <img src="' +
