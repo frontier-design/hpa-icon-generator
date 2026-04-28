@@ -380,15 +380,14 @@ window.RA.emailSignature = (function () {
               "<body>",
               '<table cellpadding="0" cellspacing="0" border="0">',
               "  <tr>",
-              '    <td style="padding-bottom: 12px;">',
+              "    <td>",
               '      <img src="' +
                 logoDataUri +
-                '" width="475" alt="Hariri Pontarini Architects" style="display:block;height:auto;" />',
+                '" width="560" alt="Hariri Pontarini Architects" style="display:block;height:auto;" />',
               "    </td>",
               "  </tr>",
-              '  <tr><td style="line-height:0;font-size:0;height:20px;">&nbsp;</td></tr>',
               "  <tr>",
-              '    <td style="padding-bottom: 8px;">',
+              '    <td style="padding-top: 30px; padding-bottom: 5px;">',
               '      <img src="' +
                 gifUrl +
                 '" width="30" height="30" alt="" style="display:block;" />',
@@ -402,8 +401,8 @@ window.RA.emailSignature = (function () {
               "    </td>",
               "  </tr>",
               "  <tr>",
-              '    <td style="padding-top: 4px;">',
-              '      <a href="https://www.hariripontarini.com" style="color:#3B2314;font-family:Georgia,serif;font-size:14px;text-decoration:none;">www.hariripontarini.com</a>',
+              "    <td>",
+              '      <a href="https://www.hariripontarini.com" style="color:#3B2314;font-family:Georgia,serif;font-size:14px;letter-spacing:0.02em;text-decoration:none;">www.hariripontarini.com</a>',
               "    </td>",
               "  </tr>",
               "</table>",
@@ -413,13 +412,12 @@ window.RA.emailSignature = (function () {
             // Show preview in the panel
             resultPreview.innerHTML = [
               '<table cellpadding="0" cellspacing="0" border="0">',
-              '  <tr><td style="padding-bottom:12px;">',
+              "  <tr><td>",
               '    <img src="' +
                 logoDataUri +
-                '" width="360" style="display:block;height:auto;" />',
+                '" width="560" style="display:block;height:auto;" />',
               "  </td></tr>",
-              '  <tr><td style="line-height:0;font-size:0;height:20px;">&nbsp;</td></tr>',
-              '  <tr><td style="padding-bottom:8px;">',
+              '  <tr><td style="padding-top:30px;padding-bottom:5px;">',
               '    <img src="' +
                 gifUrl +
                 '" width="30" height="30" style="display:block;" />',
@@ -427,10 +425,10 @@ window.RA.emailSignature = (function () {
               "  <tr><td>",
               '    <img src="' +
                 addressDataUri +
-                '" width="350" style="display:block;height:auto;" />',
+                '" width="500" style="display:block;height:auto;" />',
               "  </td></tr>",
-              '  <tr><td style="padding-top:4px;">',
-              '    <a href="https://www.hariripontarini.com" style="color:#3B2314;font-family:Georgia,serif;font-size:14px;text-decoration:none;">www.hariripontarini.com</a>',
+              "  <tr><td>",
+              '    <a href="https://www.hariripontarini.com" style="color:#3B2314;font-family:Georgia,serif;font-size:14px;letter-spacing:0.02em;text-decoration:none;">www.hariripontarini.com</a>',
               "  </td></tr>",
               "</table>",
             ].join("");
