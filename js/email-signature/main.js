@@ -239,7 +239,7 @@ window.RA.emailSignature = (function () {
 
   function renderAddressToPng() {
     var scale = 3; // 3x for retina sharpness
-    var fontSize = 14 * scale;
+    var fontSize = 16 * scale;
     var lineHeight = fontSize * 1.6;
     var cw = 560 * scale;
     var ch = Math.ceil(lineHeight + 4 * scale);
@@ -283,7 +283,7 @@ window.RA.emailSignature = (function () {
 
   function renderUrlToPng() {
     var scale = 3;
-    var fontSize = 14 * scale;
+    var fontSize = 16 * scale;
     var lineHeight = fontSize * 1.6;
     var cw = 560 * scale;
     var ch = Math.ceil(lineHeight + 4 * scale);
@@ -431,7 +431,9 @@ window.RA.emailSignature = (function () {
               "    <td>",
               '      <a href="https://www.hariripontarini.com" style="text-decoration:none;"><img src="' +
                 urlImg.dataUri +
-                '" width="' + urlImg.width + '" alt="www.hariripontarini.com" style="display:block;height:auto;" /></a>',
+                '" width="' +
+                urlImg.width +
+                '" alt="www.hariripontarini.com" style="display:block;height:auto;" /></a>',
               "    </td>",
               "  </tr>",
               "</table>",
@@ -459,7 +461,9 @@ window.RA.emailSignature = (function () {
               "  <tr><td>",
               '    <a href="https://www.hariripontarini.com" style="text-decoration:none;"><img src="' +
                 urlImg.dataUri +
-                '" width="' + urlImg.width + '" alt="www.hariripontarini.com" style="display:block;height:auto;" /></a>',
+                '" width="' +
+                urlImg.width +
+                '" alt="www.hariripontarini.com" style="display:block;height:auto;" /></a>',
               "  </td></tr>",
               "</table>",
             ].join("");
