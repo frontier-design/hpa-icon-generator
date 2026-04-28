@@ -2,9 +2,30 @@ window.RA = window.RA || {};
 
 window.RA.wallpaper = (function () {
   var ratios = [
-    { label: "16:9", w: 16, h: 9, gridCols: 15 },
-    { label: "21:9", w: 21, h: 9, gridCols: 18 },
-    { label: "32:9", w: 32, h: 9, gridCols: 25 },
+    {
+      label: "16:9",
+      w: 16,
+      h: 9,
+      gridCols: 15,
+      logoCenterPx: 750,
+      logoEdgePx: 300,
+    },
+    {
+      label: "21:9",
+      w: 21,
+      h: 9,
+      gridCols: 18,
+      logoCenterPx: 680,
+      logoEdgePx: 270,
+    },
+    {
+      label: "32:9",
+      w: 32,
+      h: 9,
+      gridCols: 25,
+      logoCenterPx: 620,
+      logoEdgePx: 240,
+    },
   ];
   var activeRatio = ratios[0];
 
@@ -254,13 +275,11 @@ window.RA.wallpaper = (function () {
     var natH = img.naturalHeight;
     var isCenterPlacement = activePlacement.key === "center";
     var renderScale = sizeScale || 1;
-    var baseLogoW = (isCenterPlacement ? 750 : 300) * renderScale;
-    // As aspect ratio gets wider, scale logo down.
-    var ratioScale = Math.sqrt(16 / activeRatio.w);
-    var logoW = baseLogoW * ratioScale;
-    var minLogoWidth = baseLogoW * (isCenterPlacement ? 0.58 : 0.52);
+    var baseLogoW =
+      (isCenterPlacement ? activeRatio.logoCenterPx : activeRatio.logoEdgePx) *
+      renderScale;
+    var logoW = baseLogoW;
     var maxLogoWidth = cw * (isCenterPlacement ? 0.8 : 0.35);
-    logoW = Math.max(logoW, minLogoWidth);
     logoW = Math.min(logoW, maxLogoWidth);
     var lw = logoW;
     var lh = logoW * (natH / natW);

@@ -29,8 +29,11 @@ window.RA = window.RA || {};
   };
 
   var savedBgColor = document.body.style.backgroundColor || "";
+  var currentTool = "florette";
 
   function switchTool(toolId) {
+    var previousTool = currentTool;
+
     buttons.forEach(function (btn) {
       btn.classList.toggle("active", btn.dataset.tool === toolId);
     });
@@ -75,7 +78,10 @@ window.RA = window.RA || {};
       document.body.style.backgroundColor = savedBgColor;
       nav.classList.remove("tool-nav--light");
     } else {
-      savedBgColor = document.body.style.backgroundColor || "";
+      // Only snapshot florette color when we are actually leaving florette.
+      if (previousTool === "florette") {
+        savedBgColor = document.body.style.backgroundColor || savedBgColor;
+      }
       document.body.style.backgroundColor = "#ffffff";
       nav.classList.add("tool-nav--light");
     }
@@ -84,6 +90,8 @@ window.RA = window.RA || {};
     if (subtitle) {
       subtitle.textContent = toolNames[toolId] || toolId;
     }
+
+    currentTool = toolId;
   }
 
   buttons.forEach(function (btn) {

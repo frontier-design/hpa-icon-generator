@@ -23,7 +23,6 @@ window.RA.emailSignature = (function () {
     '  <div class="sig-result__actions">',
     '    <button type="button" class="sig-export-btn" id="sigCopySignature">Copy Signature</button>',
     '    <button type="button" class="sig-export-btn" id="sigOpenSignature">Open Signature</button>',
-    '    <button type="button" class="sig-export-btn" id="sigDownloadGif">Download GIF</button>',
     "  </div>",
     '  <div class="sig-result__preview" id="sigResultPreview"></div>',
     "</div>",
@@ -317,7 +316,6 @@ window.RA.emailSignature = (function () {
   var resultPreview = document.getElementById("sigResultPreview");
   var copySigBtn = document.getElementById("sigCopySignature");
   var openSigBtn = document.getElementById("sigOpenSignature");
-  var downloadGifBtn = document.getElementById("sigDownloadGif");
 
   var lastGifBlobUrl = null;
   var lastSignaturePageHtml = "";
@@ -508,17 +506,6 @@ window.RA.emailSignature = (function () {
     var blob = new Blob([lastSignaturePageHtml], { type: "text/html" });
     var url = URL.createObjectURL(blob);
     window.open(url, "_blank");
-  });
-
-  // Download GIF
-  downloadGifBtn.addEventListener("click", function () {
-    if (!lastGifBlobUrl) return;
-    var a = document.createElement("a");
-    a.href = lastGifBlobUrl;
-    a.download = "hpa-florette.gif";
-    document.body.appendChild(a);
-    a.click();
-    document.body.removeChild(a);
   });
 
   function init() {}
