@@ -21,6 +21,7 @@ window.RA.emailSignature = (function () {
     "</div>",
     '<div class="sig-export-result" id="sigResult" style="display:none;">',
     '  <div class="sig-result__actions">',
+    '    <button type="button" class="sig-export-btn" id="sigCopySignature">Copy Signature</button>',
     '    <button type="button" class="sig-export-btn" id="sigOpenSignature">Open Signature</button>',
     '    <button type="button" class="sig-export-btn" id="sigDownloadGif">Download GIF</button>',
     "  </div>",
@@ -287,6 +288,7 @@ window.RA.emailSignature = (function () {
   var progressText = document.getElementById("sigProgressText");
   var resultEl = document.getElementById("sigResult");
   var resultPreview = document.getElementById("sigResultPreview");
+  var copySigBtn = document.getElementById("sigCopySignature");
   var openSigBtn = document.getElementById("sigOpenSignature");
   var downloadGifBtn = document.getElementById("sigDownloadGif");
 
@@ -305,7 +307,7 @@ window.RA.emailSignature = (function () {
     progressText.textContent = "Generating frames...";
     resultEl.style.display = "none";
 
-    var gifSize = 60;
+    var gifSize = 240;
     var gifCanvas = document.createElement("canvas");
     gifCanvas.width = gifSize;
     gifCanvas.height = gifSize;
@@ -438,6 +440,22 @@ window.RA.emailSignature = (function () {
           generateBtn.disabled = false;
         });
     }, 50);
+  });
+
+  // Copy signature HTML to clipboard
+  copySigBtn.addEventListener("click", function () {
+    if (!lastSignaturePageHtml) return;
+    // Extract just the table from the full HTML page
+    var match = lastSignaturePageHtml.match(/<table[\s\S]*<\/table>/i);
+    var tableHtml = match ? match[0] : lastSignaturePageHtml;
+
+    var clipBlob = new Blob([tableHtml], { type: "text/html" });
+    var clipItem = new ClipboardItem({ "text/html": clipBlob });
+    navigator.clipboard.write([clipItem]).then(function () {
+      var orig = copySigBtn.textContent;
+      copySigBtn.textContent = "Copied!";
+      setTimeout(function () { copySigBtn.textContent = orig; }, 2000);
+    });
   });
 
   // Open signature in new tab for copy-paste
