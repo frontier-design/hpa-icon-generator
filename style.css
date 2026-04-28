@@ -17,11 +17,17 @@
   font-style: normal;
 }
 
+@font-face {
+  font-family: 'Bradford';
+  src: url('assets/fonts/BradfordTrial-BookItalic.otf') format('opentype');
+  font-style: italic;
+}
+
 /* ── Toast (state added) — matches sheet / control buttons (EK Notice, uppercase) ── */
 
 .state-toast {
   position: fixed;
-  top: 12px;
+  top: 52px;
   right: 12px;
   z-index: 1100;
   padding: 12px 14px;
@@ -48,7 +54,7 @@
 
 @supports (padding: env(safe-area-inset-top)) {
   .state-toast {
-    top: calc(12px + env(safe-area-inset-top));
+    top: calc(52px + env(safe-area-inset-top));
     right: calc(12px + env(safe-area-inset-right));
   }
 }
@@ -57,6 +63,427 @@
   .state-toast {
     transition-duration: 0.01ms;
   }
+}
+
+/* ── Tool Navigation (top-right floating) ── */
+
+.tool-nav {
+  position: fixed;
+  top: 12px;
+  right: 12px;
+  z-index: 1050;
+  display: flex;
+  gap: 6px;
+}
+
+@supports (padding: env(safe-area-inset-top)) {
+  .tool-nav {
+    top: calc(12px + env(safe-area-inset-top));
+    right: calc(12px + env(safe-area-inset-right));
+  }
+}
+
+.tool-nav__btn {
+  padding: 8px 14px;
+  border: 1px solid rgba(247, 243, 235, 0.25);
+  border-radius: 6px;
+  background: rgba(247, 243, 235, 0.12);
+  font-family: 'EK Notice Classic', sans-serif;
+  font-size: 0.75rem;
+  line-height: 1.35;
+  font-weight: 600;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  color: #F7F3EB;
+  cursor: pointer;
+  transition: background 0.15s ease, border-color 0.15s ease, color 0.15s ease;
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
+}
+
+.tool-nav__btn:hover {
+  background: rgba(247, 243, 235, 0.2);
+  border-color: rgba(247, 243, 235, 0.4);
+}
+
+.tool-nav__btn.active {
+  background: rgba(247, 243, 235, 0.9);
+  border-color: rgba(247, 243, 235, 0.9);
+  color: #51382d;
+}
+
+/* Light background variant (email signature, etc.) */
+.tool-nav--light .tool-nav__btn {
+  border-color: rgba(81, 56, 45, 0.2);
+  background: rgba(81, 56, 45, 0.06);
+  color: #51382d;
+  backdrop-filter: none;
+  -webkit-backdrop-filter: none;
+}
+
+.tool-nav--light .tool-nav__btn:hover {
+  background: rgba(81, 56, 45, 0.12);
+  border-color: rgba(81, 56, 45, 0.3);
+}
+
+.tool-nav--light .tool-nav__btn.active {
+  background: #51382d;
+  border-color: #51382d;
+  color: #F7F3EB;
+}
+
+/* ── Tool placeholder ── */
+
+.tool-placeholder {
+  font-family: var(--sheet-ui-font);
+  font-size: var(--sheet-ui-size);
+  line-height: var(--sheet-ui-line);
+  font-weight: var(--sheet-ui-weight);
+  letter-spacing: var(--sheet-ui-spacing);
+  text-transform: uppercase;
+  color: var(--sheet-ui-color);
+  opacity: 0.5;
+  text-align: center;
+  padding: 40px 20px;
+  margin: 0;
+}
+
+/* ── Email Signature Preview ── */
+
+.sig-preview {
+  display: none;
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  justify-content: center;
+  align-items: center;
+  z-index: 1;
+}
+
+.sig-preview.active {
+  display: flex;
+}
+
+/* On desktop, offset for sidebar */
+@media (min-width: 1024px) {
+  .sig-preview {
+    left: min(400px, 32vw);
+  }
+}
+
+.sig-preview__card {
+  text-align: left;
+  max-width: 600px;
+  width: 100%;
+  padding: 40px;
+}
+
+.sig-preview__logo {
+  display: block;
+  width: 100%;
+  max-width: 560px;
+  height: auto;
+}
+
+.sig-preview__florette {
+  padding: 30px 0px 5px 0px;
+  margin-left: -4px;
+}
+
+.sig-preview__florette-canvas {
+  display: block;
+  width: 30px;
+  height: 30px;
+  image-rendering: auto;
+}
+
+.sig-preview__address {
+  margin: 0;
+  font-family: 'Bradford', serif;
+  font-size: 14px;
+  line-height: 1.6;
+  letter-spacing: 0.04em;
+  color: #3B2314;
+  text-transform: uppercase;
+}
+
+.sig-preview__address em {
+  font-style: italic;
+  text-transform: none;
+}
+
+.sig-preview__url {
+  margin: 0;
+  font-family: 'Bradford', serif;
+  font-size: 14px;
+  line-height: 1.6;
+  letter-spacing: 0.02em;
+  color: #3B2314;
+}
+
+/* Export buttons */
+.sig-preview__export {
+  position: fixed;
+  bottom: 20px;
+  right: 20px;
+  z-index: 1040;
+  display: flex;
+  gap: 8px;
+  flex-wrap: wrap;
+  justify-content: flex-end;
+}
+
+@supports (padding: env(safe-area-inset-bottom)) {
+  .sig-preview__export {
+    bottom: calc(20px + env(safe-area-inset-bottom));
+    right: calc(20px + env(safe-area-inset-right));
+  }
+}
+
+.sig-export-btn {
+  padding: 10px 16px;
+  border: 1px solid #D9CFBF;
+  border-radius: 6px;
+  background: #F7F3EB;
+  font-family: 'EK Notice Classic', sans-serif;
+  font-size: 0.75rem;
+  line-height: 1.35;
+  font-weight: 600;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  color: #51382d;
+  cursor: pointer;
+  transition: background 0.15s ease, border-color 0.15s ease, color 0.15s ease;
+}
+
+.sig-export-btn:hover {
+  background: #51382d;
+  border-color: #51382d;
+  color: #F7F3EB;
+}
+
+.sig-export-btn:disabled {
+  opacity: 0.4;
+  cursor: default;
+}
+
+.sig-export-btn:disabled:hover {
+  background: #F7F3EB;
+  border-color: #D9CFBF;
+  color: #51382d;
+}
+
+.sig-export-btn--help {
+  border-color: transparent;
+  background: transparent;
+}
+
+.sig-export-btn--help:hover {
+  background: rgba(81, 56, 45, 0.08);
+  border-color: transparent;
+  color: #51382d;
+}
+
+/* Progress bar */
+.sig-preview__progress {
+  position: fixed;
+  bottom: 60px;
+  right: 20px;
+  z-index: 1040;
+  width: 280px;
+}
+
+.sig-progress-bar {
+  height: 4px;
+  background: #D9CFBF;
+  border-radius: 2px;
+  overflow: hidden;
+}
+
+.sig-progress-fill {
+  height: 100%;
+  background: #51382d;
+  border-radius: 2px;
+  width: 0%;
+  transition: width 0.2s ease;
+}
+
+.sig-progress-text {
+  display: block;
+  margin-top: 6px;
+  font-family: 'EK Notice Classic', sans-serif;
+  font-size: 0.7rem;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  color: #51382d;
+  opacity: 0.7;
+}
+
+/* Export result */
+.sig-export-result {
+  position: fixed;
+  bottom: 60px;
+  right: 20px;
+  z-index: 1040;
+  width: 420px;
+  background: #F7F3EB;
+  border: 1px solid #D9CFBF;
+  border-radius: 10px;
+  padding: 16px;
+}
+
+.sig-result__label {
+  font-family: 'EK Notice Classic', sans-serif;
+  font-size: 0.75rem;
+  line-height: 1.5;
+  letter-spacing: 0.03em;
+  color: #51382d;
+  margin: 0 0 10px;
+}
+
+.sig-result__code {
+  width: 100%;
+  box-sizing: border-box;
+  font-family: monospace;
+  font-size: 11px;
+  line-height: 1.4;
+  color: #3B2314;
+  background: #fff;
+  border: 1px solid #D9CFBF;
+  border-radius: 6px;
+  padding: 10px;
+  resize: vertical;
+  margin-bottom: 10px;
+}
+
+.sig-result__actions {
+  display: flex;
+  gap: 8px;
+  margin-bottom: 12px;
+}
+
+.sig-result__preview {
+  background: #fff;
+  border: 1px solid #D9CFBF;
+  border-radius: 6px;
+  padding: 16px;
+}
+
+.sig-result__preview img {
+  display: block;
+  max-width: 100%;
+  height: auto;
+}
+
+/* Instructions modal */
+.sig-modal {
+  display: none;
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  z-index: 2000;
+  justify-content: center;
+  align-items: center;
+}
+
+.sig-modal.active {
+  display: flex;
+}
+
+.sig-modal__backdrop {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: rgba(23, 9, 1, 0.5);
+}
+
+.sig-modal__content {
+  position: relative;
+  background: #F7F3EB;
+  border-radius: 12px;
+  padding: 32px;
+  max-width: 560px;
+  width: 90vw;
+  max-height: 80vh;
+  overflow-y: auto;
+  z-index: 1;
+}
+
+.sig-modal__close {
+  position: absolute;
+  top: 12px;
+  right: 16px;
+  background: none;
+  border: none;
+  font-size: 24px;
+  color: #51382d;
+  cursor: pointer;
+  line-height: 1;
+  padding: 4px;
+}
+
+.sig-modal__title {
+  margin: 0 0 20px;
+  font-family: 'Bradford', serif;
+  font-size: 20px;
+  color: #3B2314;
+  font-weight: normal;
+}
+
+.sig-modal__body {
+  font-family: 'Bradford', serif;
+  font-size: 14px;
+  line-height: 1.7;
+  color: #3B2314;
+}
+
+.sig-modal__body h3 {
+  font-family: 'EK Notice Classic', sans-serif;
+  font-size: 0.8rem;
+  font-weight: 600;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  color: #51382d;
+  margin: 20px 0 8px;
+}
+
+.sig-modal__body h4 {
+  font-family: 'EK Notice Classic', sans-serif;
+  font-size: 0.75rem;
+  font-weight: 600;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  color: #51382d;
+  margin: 16px 0 6px;
+}
+
+.sig-modal__body p {
+  margin: 0 0 8px;
+}
+
+.sig-modal__body ul,
+.sig-modal__body ol {
+  margin: 0 0 8px;
+  padding-left: 20px;
+}
+
+.sig-modal__body li {
+  margin-bottom: 4px;
+}
+
+.sig-modal__body code {
+  font-family: monospace;
+  font-size: 12px;
+  background: rgba(81, 56, 45, 0.08);
+  padding: 2px 5px;
+  border-radius: 3px;
+  color: #51382d;
 }
 
 /* ── Bottom Sheet ── */

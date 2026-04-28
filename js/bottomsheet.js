@@ -18,6 +18,9 @@ window.RA.sheet = (function () {
     '<div class="bottom-sheet__body">',
     '  <div class="bottom-sheet__section active" id="sheet-controls"></div>',
     '  <div class="bottom-sheet__section" id="sheet-states"></div>',
+    '  <div class="bottom-sheet__section tool-content--email-sig" id="sheet-email-sig">',
+    '    <p class="tool-placeholder">Coming soon</p>',
+    '  </div>',
     "</div>",
   ].join("\n");
   document.body.appendChild(sheet);

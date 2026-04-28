@@ -330,5 +330,9 @@ window.RA.states = (function () {
     addState: addState,
     getIsPlaying: getIsPlaying,
     syncRingCount: syncRingCount,
+    getStates: function () { return states; },
+    interpolateStates: interpolateStates,
+    getCornerOffsets: getCornerOffsets,
+    TRANSITION_DURATION_MS: TRANSITION_DURATION_MS,
   };
 })();
