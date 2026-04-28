@@ -285,27 +285,26 @@ window.RA.emailSignature = (function () {
     var scale = 3;
     var fontSize = 14 * scale;
     var lineHeight = fontSize * 1.6;
+    var cw = 500 * scale;
+    var ch = Math.ceil(lineHeight + 4 * scale);
+
     var c = document.createElement("canvas");
+    c.width = cw;
+    c.height = ch;
     var ax = c.getContext("2d");
-    ax.font = fontSize + "px Bradford, Georgia, serif";
-    var text = "www.hariripontarini.com";
-    var tw = Math.ceil(ax.measureText(text).width + 4 * scale);
-    c.width = tw;
-    c.height = Math.ceil(lineHeight);
-    ax = c.getContext("2d");
     ax.fillStyle = "#3B2314";
     ax.textBaseline = "top";
     ax.font = fontSize + "px Bradford, Georgia, serif";
-    ax.fillText(text, 0, 0);
+    ax.fillText("www.hariripontarini.com", 0, 0);
 
     var out = document.createElement("canvas");
-    out.width = tw;
-    out.height = c.height;
+    out.width = cw;
+    out.height = ch;
     var ox = out.getContext("2d");
     ox.fillStyle = "#ffffff";
-    ox.fillRect(0, 0, tw, c.height);
+    ox.fillRect(0, 0, cw, ch);
     ox.drawImage(c, 0, 0);
-    return { dataUri: out.toDataURL("image/jpeg", 0.95), width: Math.round(tw / scale) };
+    return { dataUri: out.toDataURL("image/jpeg", 0.95), width: 500 };
   }
 
   // ── Export ──
