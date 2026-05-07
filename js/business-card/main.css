@@ -1,0 +1,372 @@
+.business-card-preview {
+  --bc-preview-sidebar: 0px;
+  --bc-preview-gap: 24px;
+  --bc-preview-padding: 24px;
+  display: none;
+  position: fixed;
+  inset: 0;
+  z-index: 1;
+  justify-content: center;
+  align-items: center;
+  padding: 0;
+  box-sizing: border-box;
+  background: #f3f3f3;
+  overflow: auto;
+}
+
+.business-card-preview.active {
+  display: flex;
+}
+
+@media (min-width: 1024px) {
+  .business-card-preview {
+    --bc-preview-sidebar: min(320px, 28vw);
+    left: min(320px, 28vw);
+  }
+}
+
+.bc-preview-pages {
+  display: flex;
+  gap: var(--bc-preview-gap);
+  padding: var(--bc-preview-padding);
+  box-sizing: border-box;
+}
+
+.bc-panel-textarea {
+  resize: vertical;
+  min-height: 72px;
+}
+
+.bc-preview-page {
+  --bc-text-color: #51382d;
+  --bc-crop-stroke: 0.15px;
+  position: relative;
+  width: min(
+    620px,
+    calc(
+      (
+          100vw
+          - var(--bc-preview-sidebar)
+          - (2 * var(--bc-preview-padding))
+          - var(--bc-preview-gap)
+        ) / 2
+    )
+  );
+  max-width: calc((100vh - (2 * var(--bc-preview-padding))) * (8.5 / 11));
+  max-height: calc(100vh - (2 * var(--bc-preview-padding)));
+  aspect-ratio: 8.5 / 11;
+  background: #fff;
+  border: 1px solid #d9d9d9;
+  flex: 0 1 auto;
+}
+
+@font-face {
+  font-family: "Bradford Light";
+  src: url("../../assets/fonts/BradfordTrial-Light.otf") format("opentype");
+  font-style: normal;
+  font-weight: normal;
+}
+
+@font-face {
+  font-family: "Bradford Book";
+  src: url("../../assets/fonts/BradfordTrial-Book.otf") format("opentype");
+  font-style: normal;
+  font-weight: normal;
+}
+
+.bc-bleed-box,
+.bc-trim-box {
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  transform: translate(-50%, -50%);
+  box-sizing: border-box;
+}
+
+.bc-bleed-box {
+  /* Bleed box: 0.25in outside trim on every side */
+  width: calc(3.37in + 0.5in);
+  height: calc(2.125in + 0.5in);
+  background: #f7f3eb;
+}
+
+.bc-trim-box {
+  /* Trim box */
+  position: relative;
+  width: 3.37in;
+  height: 2.125in;
+  display: flex;
+  align-items: flex-start;
+  justify-content: center;
+  padding: 0.18in;
+}
+
+.bc-trim-box::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+}
+
+.bc-corner-squares {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+}
+
+.bc-corner-square {
+  position: absolute;
+  /* Centered on trim corner; 0.5in total means each arm reaches 0.25in
+     outward/inward, exactly matching the bleed distance. */
+  width: 0.5in;
+  height: 0.5in;
+  box-sizing: border-box;
+  transform: translate(-50%, -50%);
+}
+
+.bc-corner-square::before,
+.bc-corner-square::after {
+  content: "";
+  position: absolute;
+  background: #000;
+}
+
+.bc-corner-square::before {
+  left: 0;
+  top: 50%;
+  width: 100%;
+  height: var(--bc-crop-stroke);
+  transform: translateY(-50%);
+}
+
+.bc-corner-square::after {
+  left: 50%;
+  top: 0;
+  width: var(--bc-crop-stroke);
+  height: 100%;
+  transform: translateX(-50%);
+}
+
+.bc-corner-square--tl {
+  left: 0;
+  top: 0;
+}
+
+.bc-corner-square--tr {
+  left: 100%;
+  top: 0;
+}
+
+.bc-corner-square--bl {
+  left: 0;
+  top: 100%;
+}
+
+.bc-corner-square--br {
+  left: 100%;
+  top: 100%;
+}
+
+.bc-trim-logo {
+  display: block;
+  width: 100%;
+  height: auto;
+}
+
+.bc-preview-page--back .bc-trim-box {
+  display: block;
+}
+
+.bc-back-layout {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+  gap: 10px;
+  width: 100%;
+  height: 100%;
+}
+
+.bc-back-col {
+  box-sizing: border-box;
+  min-width: 0;
+}
+
+.bc-back-col--left {
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+}
+
+.bc-back-col--right {
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-start;
+  align-items: flex-start;
+  height: 100%;
+}
+
+.bc-back-name {
+  font-family: "Bradford Light", serif;
+  font-size: 23pt;
+  line-height: 1.12;
+  letter-spacing: 0;
+  color: var(--bc-text-color);
+  white-space: pre;
+  max-width: 100%;
+  overflow-wrap: normal;
+  word-break: normal;
+}
+
+.bc-back-phone {
+  font-family: "Bradford Book", serif;
+  font-size: 7pt;
+  line-height: 1;
+  letter-spacing: 0.02em;
+  color: var(--bc-text-color);
+}
+
+.bc-back-phone-group {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 0.06in;
+}
+
+.bc-back-phone-square {
+  width: 0.2in;
+  aspect-ratio: 1 / 1;
+  border: 0;
+  overflow: hidden;
+  box-sizing: border-box;
+}
+
+.bc-back-email {
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  text-align: right;
+  font-family: "Bradford Book", serif;
+  font-size: 7pt;
+  line-height: 11pt;
+  letter-spacing: 0.04em;
+  color: var(--bc-text-color);
+  text-transform: uppercase;
+}
+
+.bc-back-meta {
+  margin-top: auto;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  text-align: left;
+  font-family: "EK Notice Classic", sans-serif;
+  font-size: 7pt;
+  line-height: 11pt;
+  letter-spacing: 0.08em;
+  color: var(--bc-text-color);
+  text-transform: uppercase;
+}
+
+.bc-back-role {
+  margin-bottom: 0.14in;
+  font-family: "Bradford Book", serif;
+  letter-spacing: 0.04em;
+}
+
+.bc-back-credentials {
+  display: flex;
+  flex-direction: column;
+  gap: 0;
+}
+
+.bc-address {
+  position: absolute;
+  left: 0.18in;
+  bottom: 0.18in;
+  display: flex;
+  flex-direction: column;
+  font-family: "Bradford", serif;
+  font-size: 7pt;
+  line-height: 11pt;
+  letter-spacing: 0.06em;
+  color: var(--bc-text-color);
+  text-transform: uppercase;
+}
+
+.bc-address-italic {
+  font-style: italic;
+  text-transform: none;
+  letter-spacing: 0.04em;
+}
+
+.bc-url-group {
+  position: absolute;
+  right: 0.18in;
+  bottom: 0.18in;
+}
+
+.bc-url {
+  display: block;
+  font-family: "EK Notice Classic", sans-serif;
+  font-size: 7pt;
+  line-height: 8pt;
+  letter-spacing: 0.08em;
+  color: var(--bc-text-color);
+  text-transform: uppercase;
+}
+
+.bc-top-left-marker {
+  position: absolute;
+  width: 0.2in;
+  aspect-ratio: 1 / 1;
+  border: 0;
+  overflow: hidden;
+  box-sizing: border-box;
+  left: 0;
+  bottom: calc(8pt + 0.04in);
+}
+
+.bc-florette-square-canvas {
+  display: block;
+  width: 100%;
+  height: 100%;
+}
+
+@media print {
+  @page {
+    size: letter;
+    margin: 0;
+  }
+
+  body > *:not(.business-card-preview) {
+    display: none !important;
+  }
+
+  .business-card-preview {
+    display: block !important;
+    position: static;
+    inset: auto;
+    padding: 0;
+    background: transparent;
+  }
+
+  .bc-preview-pages {
+    display: block;
+    padding: 0;
+  }
+
+  .bc-preview-page {
+    --bc-crop-stroke: 0.08px;
+    width: 8.5in;
+    height: 11in;
+    border: 0;
+    margin: 0;
+    page-break-after: always;
+    break-after: page;
+  }
+
+  .bc-preview-page:last-child {
+    page-break-after: auto;
+    break-after: auto;
+  }
+}

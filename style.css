@@ -264,6 +264,8 @@
   border: 1px solid #D9CFBF;
 }
 
+
+
 .placement-grid {
   display: grid;
   grid-template-columns: repeat(3, 1fr);

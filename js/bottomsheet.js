@@ -21,6 +21,7 @@ window.RA.sheet = (function () {
     '  <div class="bottom-sheet__section tool-content--email-sig" id="sheet-email-sig">',
     '  </div>',
     '  <div class="bottom-sheet__section" id="sheet-wallpaper"></div>',
+    '  <div class="bottom-sheet__section" id="sheet-business-card"></div>',
     "</div>",
   ].join("\n");
   document.body.appendChild(sheet);

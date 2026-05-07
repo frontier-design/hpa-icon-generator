@@ -7,3 +7,5 @@
 .cursor
 .cursor.md
 .cursor.md.backup
+node_modules/
+tools

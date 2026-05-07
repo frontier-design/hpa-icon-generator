@@ -9,6 +9,7 @@ window.RA = window.RA || {};
     '    <option value="florette" selected>Florette</option>',
     '    <option value="email-sig">Email Signature</option>',
     '    <option value="wallpaper">Wallpaper</option>',
+    '    <option value="business-card">Business Card</option>',
     '  </select>',
     '</div>',
   ].join("\n");
@@ -23,6 +24,7 @@ window.RA = window.RA || {};
   var sigPreview = document.querySelector(".sig-preview");
   var wallpaperPreview = document.querySelector(".wallpaper-preview");
   var wallpaperPanel = document.getElementById("sheet-wallpaper");
+  var businessCardPanel = document.getElementById("sheet-business-card");
   var subtitle = document.querySelector(".bottom-sheet__subtitle");
   var bgColorGroup = florControls.querySelector(".color-swatches").closest(".control-group");
 
@@ -30,6 +32,7 @@ window.RA = window.RA || {};
     florette: "The Florette Tool",
     "email-sig": "Email Signature",
     wallpaper: "Wallpaper",
+    "business-card": "Business Card",
   };
 
   var savedBgColor = document.body.style.backgroundColor || "";
@@ -42,6 +45,7 @@ window.RA = window.RA || {};
     var isFlorette = toolId === "florette";
     var isEmailSig = toolId === "email-sig";
     var isWallpaper = toolId === "wallpaper";
+    var isBusinessCard = toolId === "business-card";
 
     // Show/hide canvas
     canvas.style.display = isFlorette ? "" : "none";
@@ -55,6 +59,10 @@ window.RA = window.RA || {};
     // Wallpaper panel: visible only on wallpaper tab
     wallpaperPanel.style.display = isWallpaper ? "" : "none";
     wallpaperPanel.classList.toggle("active", isWallpaper);
+
+    // Business card panel: visible only on business card tab
+    businessCardPanel.style.display = isBusinessCard ? "" : "none";
+    businessCardPanel.classList.toggle("active", isBusinessCard);
 
     // Hide background color on non-florette tools
     bgColorGroup.style.display = isFlorette ? "" : "none";
@@ -71,6 +79,12 @@ window.RA = window.RA || {};
     // Show/hide wallpaper
     if (wallpaperPreview) {
       wallpaperPreview.classList.toggle("active", isWallpaper);
+    }
+
+    // Show/hide business card preview
+    var bcPreview = document.querySelector(".business-card-preview");
+    if (bcPreview) {
+      bcPreview.classList.toggle("active", isBusinessCard);
     }
 
     if (isEmailSig) {
