@@ -265,10 +265,6 @@ window.RA.emailSignature = (function () {
     var displayText = opts.uppercase ? text.toUpperCase() : text;
     ax.fillText(displayText, 0, 0);
 
-    var textWidth = ax.measureText(displayText).width;
-    // Compute display width at 1x (scaled down from 3x canvas)
-    var displayWidth = Math.ceil(textWidth / scale);
-
     var out = document.createElement("canvas");
     out.width = cw;
     out.height = ch;
@@ -276,7 +272,7 @@ window.RA.emailSignature = (function () {
     ox.fillStyle = "#ffffff";
     ox.fillRect(0, 0, cw, ch);
     ox.drawImage(c, 0, 0);
-    return { dataUri: out.toDataURL("image/jpeg", 0.95), width: Math.min(displayWidth, 480) };
+    return { dataUri: out.toDataURL("image/jpeg", 0.95), width: 480 };
   }
 
   function renderNameToJpeg(text) {

@@ -38,15 +38,51 @@ window.RA.wallpaper = (function () {
   var activeRatio = ratios[0];
 
   var placements = [
-    { label: "Left", key: "left", src: "assets/logos/final_logos/hpa_logo_left_stack.svg" },
-    { label: "Top", key: "top", src: "assets/logos/final_logos/hpa_logo_center_stack.svg" },
-    { label: "Center", key: "center", src: "assets/logos/final_logos/hpa_logo_single_row.svg" },
-    { label: "Bottom", key: "bottom", src: "assets/logos/final_logos/hpa_logo_center_stack.svg" },
-    { label: "Right", key: "right", src: "assets/logos/final_logos/hpa_logo_right_stack.svg" },
-    { label: "Top Left", key: "top-left", src: "assets/logos/final_logos/hpa_logo_left_stack.svg" },
-    { label: "Top Right", key: "top-right", src: "assets/logos/final_logos/hpa_logo_right_stack.svg" },
-    { label: "Bottom Left", key: "bottom-left", src: "assets/logos/final_logos/hpa_logo_left_stack.svg" },
-    { label: "Bottom Right", key: "bottom-right", src: "assets/logos/final_logos/hpa_logo_right_stack.svg" },
+    {
+      label: "Left",
+      key: "left",
+      src: "assets/logos/final_logos/hpa_logo_left_stack.svg",
+    },
+    {
+      label: "Top",
+      key: "top",
+      src: "assets/logos/final_logos/hpa_logo_center_stack.svg",
+    },
+    {
+      label: "Center",
+      key: "center",
+      src: "assets/logos/final_logos/hpa_logo_single_row.svg",
+    },
+    {
+      label: "Bottom",
+      key: "bottom",
+      src: "assets/logos/final_logos/hpa_logo_center_stack.svg",
+    },
+    {
+      label: "Right",
+      key: "right",
+      src: "assets/logos/final_logos/hpa_logo_right_stack.svg",
+    },
+    {
+      label: "Top Left",
+      key: "top-left",
+      src: "assets/logos/final_logos/hpa_logo_left_stack.svg",
+    },
+    {
+      label: "Top Right",
+      key: "top-right",
+      src: "assets/logos/final_logos/hpa_logo_right_stack.svg",
+    },
+    {
+      label: "Bottom Left",
+      key: "bottom-left",
+      src: "assets/logos/final_logos/hpa_logo_left_stack.svg",
+    },
+    {
+      label: "Bottom Right",
+      key: "bottom-right",
+      src: "assets/logos/final_logos/hpa_logo_right_stack.svg",
+    },
   ];
   var activePlacement = placements[2];
   var centerLogoToggle = false;
@@ -261,7 +297,8 @@ window.RA.wallpaper = (function () {
     if (!img || !img.complete) return null;
     var natW = img.naturalWidth;
     var natH = img.naturalHeight;
-    var isCenterSingleRow = activePlacement.key === "center" && !centerLogoToggle;
+    var isCenterSingleRow =
+      activePlacement.key === "center" && !centerLogoToggle;
     var renderScale = sizeScale || 1;
     var baseLogoW =
       (isCenterSingleRow ? activeRatio.logoCenterPx : activeRatio.logoEdgePx) *
@@ -766,7 +803,8 @@ window.RA.wallpaper = (function () {
     var idx = Number(swatch.dataset.index);
     var combo = colorCombos[idx];
     swatch.style.backgroundColor = combo.bg;
-    swatch.querySelector(".combo-swatch__inner").style.backgroundColor = combo.fg;
+    swatch.querySelector(".combo-swatch__inner").style.backgroundColor =
+      combo.fg;
     swatch.addEventListener("click", function () {
       comboSwatches.forEach(function (s) {
         s.classList.remove("selected");
