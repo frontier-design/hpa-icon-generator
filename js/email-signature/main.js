@@ -277,7 +277,7 @@ window.RA.emailSignature = (function () {
 
   function renderNameToJpeg(text) {
     return renderTextToJpeg(text, {
-      fontSize: 22,
+      fontSize: 26,
       fontFamily: "'EK Notice Classic', sans-serif",
       fontWeight: "normal",
       color: "#3B2314",
@@ -286,7 +286,7 @@ window.RA.emailSignature = (function () {
 
   function renderRoleToJpeg(text) {
     return renderTextToJpeg(text, {
-      fontSize: 13,
+      fontSize: 15,
       fontFamily: "Bradford, Georgia, serif",
       fontWeight: "bold",
       uppercase: true,
@@ -297,7 +297,7 @@ window.RA.emailSignature = (function () {
 
   function renderCredentialsToJpeg(text) {
     return renderTextToJpeg(text, {
-      fontSize: 13,
+      fontSize: 15,
       fontFamily: "'EK Notice Classic', sans-serif",
       fontWeight: "normal",
       uppercase: true,
