@@ -83,8 +83,16 @@
   }
 }
 
-.tool-nav__btn {
-  padding: 8px 14px;
+.tool-nav__select-wrap {
+  position: relative;
+}
+
+.tool-nav__select-wrap::after {
+  border-top-color: #F7F3EB;
+}
+
+.tool-nav__select {
+  padding: 8px 30px 8px 14px;
   border: 1px solid rgba(247, 243, 235, 0.25);
   border-radius: 6px;
   background: rgba(247, 243, 235, 0.12);
@@ -96,24 +104,29 @@
   text-transform: uppercase;
   color: #F7F3EB;
   cursor: pointer;
-  transition: background 0.15s ease, border-color 0.15s ease, color 0.15s ease;
+  -webkit-appearance: none;
+  appearance: none;
   backdrop-filter: blur(8px);
   -webkit-backdrop-filter: blur(8px);
+  transition: background 0.15s ease, border-color 0.15s ease;
 }
 
-.tool-nav__btn:hover {
+.tool-nav__select:hover {
   background: rgba(247, 243, 235, 0.2);
   border-color: rgba(247, 243, 235, 0.4);
 }
 
-.tool-nav__btn.active {
-  background: rgba(247, 243, 235, 0.9);
-  border-color: rgba(247, 243, 235, 0.9);
-  color: #51382d;
+.tool-nav__select:focus {
+  outline: none;
+  border-color: rgba(247, 243, 235, 0.5);
 }
 
-/* Light background variant (email signature, etc.) */
-.tool-nav--light .tool-nav__btn {
+/* Light background variant (email signature, wallpaper) */
+.tool-nav--light .tool-nav__select-wrap::after {
+  border-top-color: #51382d;
+}
+
+.tool-nav--light .tool-nav__select {
   border-color: rgba(81, 56, 45, 0.2);
   background: rgba(81, 56, 45, 0.06);
   color: #51382d;
@@ -121,15 +134,9 @@
   -webkit-backdrop-filter: none;
 }
 
-.tool-nav--light .tool-nav__btn:hover {
+.tool-nav--light .tool-nav__select:hover {
   background: rgba(81, 56, 45, 0.12);
   border-color: rgba(81, 56, 45, 0.3);
-}
-
-.tool-nav--light .tool-nav__btn.active {
-  background: #51382d;
-  border-color: #51382d;
-  color: #F7F3EB;
 }
 
 /* ── Tool placeholder ── */
@@ -146,6 +153,34 @@
   text-align: center;
   padding: 40px 20px;
   margin: 0;
+}
+
+/* ── Email Signature Inputs ── */
+
+.sig-input {
+  width: 100%;
+  padding: 10px 12px;
+  box-sizing: border-box;
+  border: none;
+  border-radius: 6px;
+  font-family: 'Bradford', serif;
+  font-size: 15px;
+  line-height: 1.5;
+  background: rgba(217, 207, 191, 0.4);
+  color: #170901;
+  transition: border-color 0.15s ease;
+}
+
+.sig-input:focus {
+  outline: none;
+  box-shadow: inset 0 0 0 1px var(--sheet-ui-color);
+}
+
+.sig-input--uppercase {
+  font-family: 'EK Notice Classic', sans-serif;
+  font-size: 0.8125rem;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
 }
 
 /* ── Email Signature Preview ── */
@@ -303,6 +338,53 @@
   padding: 40px;
 }
 
+.sig-preview__name {
+  margin: 0 0 14px;
+  font-family: 'EK Notice Classic', sans-serif;
+  font-size: 22px;
+  line-height: 1.3;
+  color: #3B2314;
+  font-weight: normal;
+}
+
+.sig-preview__name:empty {
+  display: none;
+}
+
+.sig-preview__role {
+  margin: 0 0 2px;
+  font-family: 'Bradford', serif;
+  font-size: 0.8125rem;
+  line-height: 1.5;
+  font-weight: 700;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  color: #3B2314;
+}
+
+.sig-preview__role:empty {
+  display: none;
+}
+
+.sig-preview__info {
+  margin-bottom: 64px;
+}
+
+.sig-preview__credentials {
+  margin: 0;
+  font-family: 'EK Notice Classic', sans-serif;
+  font-size: 0.8125rem;
+  line-height: 1.5;
+  font-weight: 400;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  color: #3B2314;
+}
+
+.sig-preview__credentials:empty {
+  display: none;
+}
+
 .sig-preview__logo {
   display: block;
   width: 100%;
@@ -311,7 +393,7 @@
 }
 
 .sig-preview__florette {
-  padding: 30px 0px 5px 0px;
+  padding: 30px 0px 10px 0px;
   margin-left: -4px;
 }
 
@@ -655,7 +737,7 @@
     left: 0;
     right: auto;
     bottom: auto;
-    width: min(400px, 32vw);
+    width: min(320px, 28vw);
     height: 100vh;
     max-height: 100vh;
     border-radius: 0;
@@ -826,6 +908,7 @@
   overflow: hidden;
   padding: 16px 20px 20px;
   overscroll-behavior: contain;
+
 }
 
 .bottom-sheet__section {
@@ -1140,10 +1223,25 @@
   color: var(--sheet-ui-color);
 }
 
+/* Export row */
+.export-row {
+  display: flex;
+  gap: 8px;
+}
+
+.export-format-wrapper {
+  flex: 1;
+}
+
+.export-scale-wrapper {
+  flex: 0 0 auto;
+  min-width: 70px;
+}
+
 /* Color swatches */
 .color-swatches {
-  display: grid;
-  grid-template-columns: repeat(6, 1fr);
+  display: flex;
+  flex-wrap: wrap;
   gap: 10px;
 }
 
@@ -1166,6 +1264,56 @@
 .color-swatch.selected {
   border-color: var(--sheet-ui-color);
   border-width: 2px;
+}
+
+/* Combo swatches (bg + fg circle-in-circle) — override .control-group button */
+.control-group .combo-swatch {
+  width: 30px;
+  height: 30px;
+  min-width: 30px;
+  max-width: 30px;
+  min-height: 30px;
+  max-height: 30px;
+  border-radius: 50%;
+  border: 1px solid rgba(23, 9, 1, 0.1);
+  cursor: pointer;
+  padding: 0;
+  flex-shrink: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: transform 0.15s ease;
+  box-sizing: border-box;
+  background: none;
+}
+
+.control-group .combo-swatch:hover {
+  border-color: var(--sheet-ui-color);
+  background: none;
+  color: inherit;
+}
+
+.combo-swatch.selected {
+  border-color: var(--sheet-ui-color);
+  border-width: 1px;
+}
+
+.combo-swatch__inner {
+  width: 50%;
+  height: 50%;
+  border-radius: 50%;
+  pointer-events: none;
+}
+
+.combo-swatch--none {
+  background: none !important;
+  color: var(--sheet-ui-color);
+}
+
+.combo-swatch__icon {
+  width: 100%;
+  height: 100%;
+  pointer-events: none;
 }
 
 /* ── States / Animation ── */

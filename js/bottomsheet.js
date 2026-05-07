@@ -8,7 +8,7 @@ window.RA.sheet = (function () {
     '  <div class="bottom-sheet__handle"></div>',
     "</div>",
     '<div class="bottom-sheet__brand">',
-    '  <img class="bottom-sheet__brand-logo" src="assets/images/HPA_Logo_Mar.svg" width="1134" height="57" alt="HPA">',
+    '  <img class="bottom-sheet__brand-logo" src="assets/logos/final_logos/hpa_logo_single_row.svg" width="1134" height="57" alt="HPA">',
     '  <p class="bottom-sheet__subtitle">The Florette Tool</p>',
     "</div>",
     '<div class="bottom-sheet__tabs">',
@@ -19,7 +19,6 @@ window.RA.sheet = (function () {
     '  <div class="bottom-sheet__section active" id="sheet-controls"></div>',
     '  <div class="bottom-sheet__section" id="sheet-states"></div>',
     '  <div class="bottom-sheet__section tool-content--email-sig" id="sheet-email-sig">',
-    '    <p class="tool-placeholder">Coming soon</p>',
     '  </div>',
     '  <div class="bottom-sheet__section" id="sheet-wallpaper"></div>',
     "</div>",
@@ -92,7 +91,7 @@ window.RA.sheet = (function () {
 
     if (isDesktop()) {
       var pw = sheet.offsetWidth;
-      if (!pw || pw < 40) pw = Math.min(400, W * 0.32);
+      if (!pw || pw < 40) pw = Math.min(320, W * 0.28);
       var vw = Math.max(0, W - pw);
       return {
         centerX: pw + vw / 2,

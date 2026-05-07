@@ -26,17 +26,30 @@ window.RA.wallpaper = (function () {
       logoCenterPx: 620,
       logoEdgePx: 240,
     },
+    {
+      label: "9:16",
+      w: 9,
+      h: 16,
+      gridCols: 8,
+      logoCenterPx: 400,
+      logoEdgePx: 200,
+    },
   ];
   var activeRatio = ratios[0];
 
   var placements = [
-    { label: "Left", key: "left", src: "assets/logos/hpa-left.svg" },
-    { label: "Top", key: "top", src: "assets/logos/hpa-center.svg" },
-    { label: "Center", key: "center", src: "assets/images/HPA_Logo_Mar.svg" },
-    { label: "Bottom", key: "bottom", src: "assets/logos/hpa-center.svg" },
-    { label: "Right", key: "right", src: "assets/logos/hpa-right.svg" },
+    { label: "Left", key: "left", src: "assets/logos/final_logos/hpa_logo_left_stack.svg" },
+    { label: "Top", key: "top", src: "assets/logos/final_logos/hpa_logo_center_stack.svg" },
+    { label: "Center", key: "center", src: "assets/logos/final_logos/hpa_logo_single_row.svg" },
+    { label: "Bottom", key: "bottom", src: "assets/logos/final_logos/hpa_logo_center_stack.svg" },
+    { label: "Right", key: "right", src: "assets/logos/final_logos/hpa_logo_right_stack.svg" },
+    { label: "Top Left", key: "top-left", src: "assets/logos/final_logos/hpa_logo_left_stack.svg" },
+    { label: "Top Right", key: "top-right", src: "assets/logos/final_logos/hpa_logo_right_stack.svg" },
+    { label: "Bottom Left", key: "bottom-left", src: "assets/logos/final_logos/hpa_logo_left_stack.svg" },
+    { label: "Bottom Right", key: "bottom-right", src: "assets/logos/final_logos/hpa_logo_right_stack.svg" },
   ];
   var activePlacement = placements[2];
+  var centerLogoToggle = false;
 
   // Preload logo images
   var logoImages = {};
@@ -57,26 +70,17 @@ window.RA.wallpaper = (function () {
 
   // ── Left panel controls ──
 
-  var bgColors = [
-    { color: "#170901", name: "Smoked Oak" },
-    { color: "#302118", name: "Cedar" },
-    { color: "#3F2A1E", name: "Walnut" },
-    { color: "#51382D", name: "Teak" },
-    { color: "#D9CFBF", name: "Limestone" },
-    { color: "#F7F3EB", name: "Linen" },
+  var colorCombos = [
+    { bg: "#170901", fg: "#F7F3EB", name: "Smoked Oak / Linen" },
+    { bg: "#302118", fg: "#F7F3EB", name: "Cedar / Linen" },
+    { bg: "#3F2A1E", fg: "#F7F3EB", name: "Walnut / Linen" },
+    { bg: "#51382D", fg: "#F7F3EB", name: "Teak / Linen" },
+    { bg: "#D9CFBF", fg: "#51382D", name: "Limestone / Teak" },
+    { bg: "#F7F3EB", fg: "#51382D", name: "Linen / Teak" },
   ];
-  var defaultBgColor = "#3F2A1E";
-  var activeBg = defaultBgColor;
-  var logoColors = [
-    { color: "#FEB36B", name: "Foil Gold" },
-    { color: "#F7F3EB", name: "Linen" },
-    { color: "#D9CFBF", name: "Limestone" },
-    { color: "#302118", name: "Cedar" },
-    { color: "#51382D", name: "Teak" },
-    { color: "#170901", name: "Smoked Oak" },
-  ];
-  var defaultLogoColor = "#F7F3EB";
-  var activeLogoColor = defaultLogoColor;
+  var defaultComboIndex = 2;
+  var activeBg = colorCombos[defaultComboIndex].bg;
+  var activeLogoColor = colorCombos[defaultComboIndex].fg;
   var markerCount = 7;
   var showGrid = false;
 
@@ -101,36 +105,20 @@ window.RA.wallpaper = (function () {
     "  </div>",
     "</div>",
     '<div class="control-group">',
-    '  <label class="control-label">Background</label>',
+    '  <label class="control-label">Color</label>',
     '  <div class="color-swatches">',
-    bgColors
+    colorCombos
       .map(function (c, i) {
         return (
-          '<button type="button" class="color-swatch wallpaper-bg-swatch' +
-          (c.color === defaultBgColor ? " selected" : "") +
-          '" data-color="' +
-          c.color +
+          '<button type="button" class="combo-swatch' +
+          (i === defaultComboIndex ? " selected" : "") +
+          '" data-index="' +
+          i +
           '" title="' +
           c.name +
-          '"></button>'
-        );
-      })
-      .join("\n"),
-    "  </div>",
-    "</div>",
-    '<div class="control-group">',
-    '  <label class="control-label">Logo Color</label>',
-    '  <div class="color-swatches">',
-    logoColors
-      .map(function (c, i) {
-        return (
-          '<button type="button" class="color-swatch wallpaper-logo-swatch' +
-          (c.color === defaultLogoColor ? " selected" : "") +
-          '" data-color="' +
-          c.color +
-          '" title="' +
-          c.name +
-          '"></button>'
+          '">' +
+          '<span class="combo-swatch__inner"></span>' +
+          "</button>"
         );
       })
       .join("\n"),
@@ -139,15 +127,15 @@ window.RA.wallpaper = (function () {
     '<div class="control-group">',
     '  <label class="control-label">Logo Placement</label>',
     '  <div class="placement-grid">',
-    '    <span class="placement-dot inactive"></span>',
+    '    <button class="placement-dot" data-placement="5" title="Top Left"></button>',
     '    <button class="placement-dot" data-placement="1" title="Top"></button>',
-    '    <span class="placement-dot inactive"></span>',
+    '    <button class="placement-dot" data-placement="6" title="Top Right"></button>',
     '    <button class="placement-dot" data-placement="0" title="Left"></button>',
     '    <button class="placement-dot active" data-placement="2" title="Center"></button>',
     '    <button class="placement-dot" data-placement="4" title="Right"></button>',
-    '    <span class="placement-dot inactive"></span>',
+    '    <button class="placement-dot" data-placement="7" title="Bottom Left"></button>',
     '    <button class="placement-dot" data-placement="3" title="Bottom"></button>',
-    '    <span class="placement-dot inactive"></span>',
+    '    <button class="placement-dot" data-placement="8" title="Bottom Right"></button>',
     "  </div>",
     "</div>",
     '<div class="control-group">',
@@ -273,13 +261,13 @@ window.RA.wallpaper = (function () {
     if (!img || !img.complete) return null;
     var natW = img.naturalWidth;
     var natH = img.naturalHeight;
-    var isCenterPlacement = activePlacement.key === "center";
+    var isCenterSingleRow = activePlacement.key === "center" && !centerLogoToggle;
     var renderScale = sizeScale || 1;
     var baseLogoW =
-      (isCenterPlacement ? activeRatio.logoCenterPx : activeRatio.logoEdgePx) *
+      (isCenterSingleRow ? activeRatio.logoCenterPx : activeRatio.logoEdgePx) *
       renderScale;
     var logoW = baseLogoW;
-    var maxLogoWidth = cw * (isCenterPlacement ? 0.8 : 0.35);
+    var maxLogoWidth = cw * (isCenterSingleRow ? 0.8 : 0.35);
     logoW = Math.min(logoW, maxLogoWidth);
     var lw = logoW;
     var lh = logoW * (natH / natW);
@@ -307,6 +295,22 @@ window.RA.wallpaper = (function () {
       case "right":
         x = cw - lw - padding;
         y = (ch - lh) / 2;
+        break;
+      case "top-left":
+        x = padding;
+        y = padding;
+        break;
+      case "top-right":
+        x = cw - lw - padding;
+        y = padding;
+        break;
+      case "bottom-left":
+        x = padding;
+        y = ch - lh - padding;
+        break;
+      case "bottom-right":
+        x = cw - lw - padding;
+        y = ch - lh - padding;
         break;
     }
 
@@ -696,7 +700,19 @@ window.RA.wallpaper = (function () {
   }
 
   function setPlacement(index) {
-    activePlacement = placements[index];
+    if (index === 2) {
+      centerLogoToggle = !centerLogoToggle;
+      activePlacement = {
+        label: "Center",
+        key: "center",
+        src: centerLogoToggle
+          ? "assets/logos/final_logos/hpa_logo_center_stack.svg"
+          : "assets/logos/final_logos/hpa_logo_single_row.svg",
+      };
+    } else {
+      centerLogoToggle = false;
+      activePlacement = placements[index];
+    }
     placementBtns.forEach(function (btn) {
       btn.classList.toggle("active", Number(btn.dataset.placement) === index);
     });
@@ -745,28 +761,19 @@ window.RA.wallpaper = (function () {
     downloadWallpaperJpeg(6144);
   });
 
-  var bgSwatches = panel.querySelectorAll(".wallpaper-bg-swatch");
-  bgSwatches.forEach(function (swatch) {
-    swatch.style.backgroundColor = swatch.getAttribute("data-color");
+  var comboSwatches = panel.querySelectorAll(".combo-swatch");
+  comboSwatches.forEach(function (swatch) {
+    var idx = Number(swatch.dataset.index);
+    var combo = colorCombos[idx];
+    swatch.style.backgroundColor = combo.bg;
+    swatch.querySelector(".combo-swatch__inner").style.backgroundColor = combo.fg;
     swatch.addEventListener("click", function () {
-      bgSwatches.forEach(function (s) {
+      comboSwatches.forEach(function (s) {
         s.classList.remove("selected");
       });
       swatch.classList.add("selected");
-      activeBg = swatch.dataset.color;
-      draw();
-    });
-  });
-
-  var logoSwatches = panel.querySelectorAll(".wallpaper-logo-swatch");
-  logoSwatches.forEach(function (swatch) {
-    swatch.style.backgroundColor = swatch.getAttribute("data-color");
-    swatch.addEventListener("click", function () {
-      logoSwatches.forEach(function (s) {
-        s.classList.remove("selected");
-      });
-      swatch.classList.add("selected");
-      activeLogoColor = sanitizeLogoColor(swatch.dataset.color);
+      activeBg = combo.bg;
+      activeLogoColor = combo.fg;
       draw();
     });
   });

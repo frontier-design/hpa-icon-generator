@@ -5,15 +5,32 @@ window.RA.controls = (function () {
   panel.innerHTML = `
     <div class="control-panel">
       <div class="control-panel__main">
+
+    <div class="sig-fields" id="sigFields" style="display:none;">
+      <div class="control-group">
+        <label for="sigName">Name</label>
+        <input type="text" id="sigName" class="sig-input" placeholder="Siamak Hariri">
+      </div>
+      <div class="control-group">
+        <label for="sigRole">Role</label>
+        <input type="text" id="sigRole" class="sig-input" placeholder="Founding Partner">
+      </div>
+      <div class="control-group">
+        <label for="sigCredentials">Credentials</label>
+        <input type="text" id="sigCredentials" class="sig-input sig-input--uppercase" placeholder="OAA, AAA, AIBC, FRAIC, NSAA">
+      </div>
+    </div>
+
     <div class="control-group">
       <label>Background Color</label>
       <div class="color-swatches">
-        <button type="button" class="color-swatch selected" data-color="#170901" title="Smoked Oak"></button>
-        <button type="button" class="color-swatch" data-color="#302118" title="Cedar"></button>
-        <button type="button" class="color-swatch" data-color="#3F2A1E" title="Walnut"></button>
-        <button type="button" class="color-swatch" data-color="#51382D" title="Teak"></button>
-        <button type="button" class="color-swatch" data-color="#D9CFBF" title="Limestone"></button>
-        <button type="button" class="color-swatch" data-color="#F7F3EB" title="Linen"></button>
+        <button type="button" class="combo-swatch selected" data-color="#170901" title="Smoked Oak"></button>
+        <button type="button" class="combo-swatch" data-color="#302118" title="Cedar"></button>
+        <button type="button" class="combo-swatch" data-color="#3F2A1E" title="Walnut"></button>
+        <button type="button" class="combo-swatch" data-color="#51382D" title="Teak"></button>
+        <button type="button" class="combo-swatch" data-color="#D9CFBF" title="Limestone"></button>
+        <button type="button" class="combo-swatch" data-color="#F7F3EB" title="Linen"></button>
+        <button type="button" class="combo-swatch combo-swatch--none" data-color="transparent" title="Transparent"><svg viewBox="0 0 30 30" class="combo-swatch__icon"><line x1="5" y1="25" x2="25" y2="5" stroke="currentColor" stroke-width="1.5"/></svg></button>
       </div>
     </div>
 
@@ -85,6 +102,24 @@ window.RA.controls = (function () {
         <button type="button" id="undoBtn" disabled>Undo</button>
         <button type="button" id="redoBtn" disabled>Redo</button>
       </div>
+    </div>
+
+    <div class="control-group">
+      <label>Export</label>
+      <div class="export-row">
+        <div class="select-wrapper export-scale-wrapper" id="exportScaleWrap" style="display:none;">
+          <select id="exportScale"></select>
+        </div>
+        <div class="select-wrapper export-format-wrapper">
+          <select id="exportFormat">
+            <option value="" disabled selected>Export as&hellip;</option>
+            <option value="png">PNG</option>
+            <option value="jpg">JPG</option>
+            <option value="gif">GIF</option>
+          </select>
+        </div>
+      </div>
+      <button type="button" id="exportBtn" class="randomise-btn" disabled>Export</button>
     </div>
       </div>
     </div>
@@ -316,7 +351,7 @@ window.RA.controls = (function () {
       if (
         input.id === "addStateBtn" ||
         input.id === "numberOfRectangles" ||
-        input.classList.contains("color-swatch")
+        input.classList.contains("combo-swatch")
       )
         return;
       input.disabled = disabled;
@@ -379,15 +414,73 @@ window.RA.controls = (function () {
       onChange();
     });
 
-    panel.querySelectorAll(".color-swatch").forEach(function (swatch) {
+    panel.querySelectorAll(".combo-swatch").forEach(function (swatch) {
       swatch.style.backgroundColor = swatch.getAttribute("data-color");
       swatch.addEventListener("click", function () {
         document.body.style.backgroundColor = this.getAttribute("data-color");
-        panel.querySelectorAll(".color-swatch").forEach(function (s) {
+        panel.querySelectorAll(".combo-swatch").forEach(function (s) {
           s.classList.remove("selected");
         });
         this.classList.add("selected");
       });
+    });
+
+    // ── Export ──
+    var exportFormat = document.getElementById("exportFormat");
+    var exportScale = document.getElementById("exportScale");
+    var exportScaleWrap = document.getElementById("exportScaleWrap");
+    var exportBtn = document.getElementById("exportBtn");
+
+    var scaleOptionsImage = [
+      { value: "1", label: "\u00d71" },
+      { value: "2", label: "\u00d72" },
+      { value: "3", label: "\u00d73" },
+      { value: "4", label: "\u00d74" },
+    ];
+    var scaleOptionsGif = [
+      { value: "60", label: "60 frames" },
+      { value: "120", label: "120 frames" },
+      { value: "240", label: "240 frames" },
+      { value: "480", label: "480 frames" },
+    ];
+
+    function setScaleOptions(options) {
+      exportScale.innerHTML = "";
+      options.forEach(function (opt) {
+        var o = document.createElement("option");
+        o.value = opt.value;
+        o.textContent = opt.label;
+        exportScale.appendChild(o);
+      });
+    }
+
+    function updateExportBtn() {
+      exportBtn.disabled = !exportFormat.value;
+    }
+
+    exportFormat.addEventListener("change", function () {
+      var fmt = exportFormat.value;
+      if (!fmt) {
+        exportScaleWrap.style.display = "none";
+      } else if (fmt === "gif") {
+        setScaleOptions(scaleOptionsGif);
+        exportScaleWrap.style.display = "";
+      } else {
+        setScaleOptions(scaleOptionsImage);
+        exportScaleWrap.style.display = "";
+      }
+      updateExportBtn();
+    });
+
+    exportBtn.addEventListener("click", function () {
+      var fmt = exportFormat.value;
+      if (!fmt) return;
+      var scale = exportScale.value;
+      if (fmt === "gif") {
+        window.dispatchEvent(new CustomEvent("exportFlorette", { detail: { format: "gif-" + scale } }));
+      } else {
+        window.dispatchEvent(new CustomEvent("exportFlorette", { detail: { format: fmt + "-" + scale + "x" } }));
+      }
     });
   }
 

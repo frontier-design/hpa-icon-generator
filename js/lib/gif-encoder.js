@@ -11,7 +11,10 @@ var MiniGIF = (function () {
 
   Encoder.prototype.addFrame = function (ctx, delay) {
     var imageData = ctx.getImageData(0, 0, this.width, this.height);
-    this.frames.push({ data: new Uint8Array(imageData.data), delay: delay || 100 });
+    this.frames.push({
+      data: new Uint8Array(imageData.data),
+      delay: delay || 100,
+    });
   };
 
   Encoder.prototype.render = function () {
@@ -61,7 +64,7 @@ var MiniGIF = (function () {
     writeStr(buf, "GIF89a");
     writeU16(buf, w);
     writeU16(buf, h);
-    buf.push(0xF7); // GCT, 8-bit, 256 colors
+    buf.push(0xf7); // GCT, 8-bit, 256 colors
     buf.push(0);
     buf.push(0);
 
@@ -71,7 +74,7 @@ var MiniGIF = (function () {
     }
 
     // Netscape looping extension
-    buf.push(0x21, 0xFF, 0x0B);
+    buf.push(0x21, 0xff, 0x0b);
     writeStr(buf, "NETSCAPE2.0");
     buf.push(0x03, 0x01);
     writeU16(buf, 0);
@@ -82,14 +85,14 @@ var MiniGIF = (function () {
       var indices = quantize(frame.data, palette, w * h);
 
       // Graphic Control Extension
-      buf.push(0x21, 0xF9, 0x04);
+      buf.push(0x21, 0xf9, 0x04);
       buf.push(0x09); // dispose to bg + transparency
       writeU16(buf, Math.round(frame.delay / 10));
       buf.push(255); // transparent index
       buf.push(0x00);
 
       // Image Descriptor
-      buf.push(0x2C);
+      buf.push(0x2c);
       writeU16(buf, 0);
       writeU16(buf, 0);
       writeU16(buf, w);
@@ -109,7 +112,7 @@ var MiniGIF = (function () {
       buf.push(0x00);
     }
 
-    buf.push(0x3B);
+    buf.push(0x3b);
     return new Blob([new Uint8Array(buf)], { type: "image/gif" });
   };
 
@@ -142,7 +145,9 @@ var MiniGIF = (function () {
       var range = bucketRange(bucket);
       var channel = range.channel;
 
-      bucket.sort(function (a, b) { return a[channel] - b[channel]; });
+      bucket.sort(function (a, b) {
+        return a[channel] - b[channel];
+      });
       var mid = Math.floor(bucket.length / 2);
       buckets.splice(bestIdx, 1, bucket.slice(0, mid), bucket.slice(mid));
     }
@@ -151,10 +156,17 @@ var MiniGIF = (function () {
     var result = [];
     for (var b = 0; b < buckets.length; b++) {
       var bk = buckets[b];
-      if (bk.length === 0) { result.push([0, 0, 0]); continue; }
-      var sr = 0, sg = 0, sb = 0;
+      if (bk.length === 0) {
+        result.push([0, 0, 0]);
+        continue;
+      }
+      var sr = 0,
+        sg = 0,
+        sb = 0;
       for (var i = 0; i < bk.length; i++) {
-        sr += bk[i][0]; sg += bk[i][1]; sb += bk[i][2];
+        sr += bk[i][0];
+        sg += bk[i][1];
+        sb += bk[i][2];
       }
       result.push([
         Math.round(sr / bk.length),
@@ -166,17 +178,34 @@ var MiniGIF = (function () {
   }
 
   function bucketRange(bucket) {
-    var minR = 255, maxR = 0, minG = 255, maxG = 0, minB = 255, maxB = 0;
+    var minR = 255,
+      maxR = 0,
+      minG = 255,
+      maxG = 0,
+      minB = 255,
+      maxB = 0;
     for (var i = 0; i < bucket.length; i++) {
       var c = bucket[i];
-      if (c[0] < minR) minR = c[0]; if (c[0] > maxR) maxR = c[0];
-      if (c[1] < minG) minG = c[1]; if (c[1] > maxG) maxG = c[1];
-      if (c[2] < minB) minB = c[2]; if (c[2] > maxB) maxB = c[2];
+      if (c[0] < minR) minR = c[0];
+      if (c[0] > maxR) maxR = c[0];
+      if (c[1] < minG) minG = c[1];
+      if (c[1] > maxG) maxG = c[1];
+      if (c[2] < minB) minB = c[2];
+      if (c[2] > maxB) maxB = c[2];
     }
-    var rr = maxR - minR, rg = maxG - minG, rb = maxB - minB;
-    var ch = 0, mr = rr;
-    if (rg > mr) { ch = 1; mr = rg; }
-    if (rb > mr) { ch = 2; mr = rb; }
+    var rr = maxR - minR,
+      rg = maxG - minG,
+      rb = maxB - minB;
+    var ch = 0,
+      mr = rr;
+    if (rg > mr) {
+      ch = 1;
+      mr = rg;
+    }
+    if (rb > mr) {
+      ch = 2;
+      mr = rb;
+    }
     return { channel: ch, maxRange: mr };
   }
 
@@ -191,19 +220,29 @@ var MiniGIF = (function () {
         indices[i] = 255;
         continue;
       }
-      var r = pixels[off], g = pixels[off + 1], b = pixels[off + 2];
+      var r = pixels[off],
+        g = pixels[off + 1],
+        b = pixels[off + 2];
       // Quantize to 5-bit for cache key
       var key = ((r >> 3) << 10) | ((g >> 3) << 5) | (b >> 3);
       if (cache[key] !== undefined) {
         indices[i] = cache[key];
         continue;
       }
-      var bestDist = Infinity, bestIdx = 0;
+      var bestDist = Infinity,
+        bestIdx = 0;
       for (var p = 0; p < 255; p++) {
-        var pr = palette[p][0], pg = palette[p][1], pb = palette[p][2];
-        var dr = r - pr, dg = g - pg, db = b - pb;
+        var pr = palette[p][0],
+          pg = palette[p][1],
+          pb = palette[p][2];
+        var dr = r - pr,
+          dg = g - pg,
+          db = b - pb;
         var dist = dr * dr + dg * dg + db * db;
-        if (dist < bestDist) { bestDist = dist; bestIdx = p; }
+        if (dist < bestDist) {
+          bestDist = dist;
+          bestIdx = p;
+        }
       }
       cache[key] = bestIdx;
       indices[i] = bestIdx;
@@ -223,13 +262,14 @@ var MiniGIF = (function () {
     var table = {};
 
     var output = [];
-    var bitBuf = 0, bitPos = 0;
+    var bitBuf = 0,
+      bitPos = 0;
 
     function writeBits(code, size) {
-      bitBuf |= (code << bitPos);
+      bitBuf |= code << bitPos;
       bitPos += size;
       while (bitPos >= 8) {
-        output.push(bitBuf & 0xFF);
+        output.push(bitBuf & 0xff);
         bitBuf >>= 8;
         bitPos -= 8;
       }
@@ -238,7 +278,7 @@ var MiniGIF = (function () {
     writeBits(clearCode, codeSize);
     if (indices.length === 0) {
       writeBits(eoiCode, codeSize);
-      if (bitPos > 0) output.push(bitBuf & 0xFF);
+      if (bitPos > 0) output.push(bitBuf & 0xff);
       return output;
     }
 
@@ -269,12 +309,12 @@ var MiniGIF = (function () {
 
     writeBits(current, codeSize);
     writeBits(eoiCode, codeSize);
-    if (bitPos > 0) output.push(bitBuf & 0xFF);
+    if (bitPos > 0) output.push(bitBuf & 0xff);
     return output;
   }
 
   function writeU16(buf, val) {
-    buf.push(val & 0xFF, (val >> 8) & 0xFF);
+    buf.push(val & 0xff, (val >> 8) & 0xff);
   }
 
   function writeStr(buf, str) {

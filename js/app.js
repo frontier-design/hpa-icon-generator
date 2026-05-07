@@ -4,13 +4,17 @@ window.RA = window.RA || {};
   var nav = document.createElement("div");
   nav.className = "tool-nav";
   nav.innerHTML = [
-    '<button class="tool-nav__btn active" data-tool="florette">Florette</button>',
-    '<button class="tool-nav__btn" data-tool="email-sig">Email Signature</button>',
-    '<button class="tool-nav__btn" data-tool="wallpaper">Wallpaper</button>',
+    '<div class="select-wrapper tool-nav__select-wrap">',
+    '  <select class="tool-nav__select" id="toolSelect">',
+    '    <option value="florette" selected>Florette</option>',
+    '    <option value="email-sig">Email Signature</option>',
+    '    <option value="wallpaper">Wallpaper</option>',
+    '  </select>',
+    '</div>',
   ].join("\n");
   document.body.appendChild(nav);
 
-  var buttons = nav.querySelectorAll(".tool-nav__btn");
+  var toolSelect = document.getElementById("toolSelect");
   var canvas = document.getElementById("myCanvas");
   var florTabs = document.querySelector(".bottom-sheet__tabs");
   var florControls = document.getElementById("sheet-controls");
@@ -33,10 +37,7 @@ window.RA = window.RA || {};
 
   function switchTool(toolId) {
     var previousTool = currentTool;
-
-    buttons.forEach(function (btn) {
-      btn.classList.toggle("active", btn.dataset.tool === toolId);
-    });
+    toolSelect.value = toolId;
 
     var isFlorette = toolId === "florette";
     var isEmailSig = toolId === "email-sig";
@@ -45,7 +46,7 @@ window.RA = window.RA || {};
     // Show/hide canvas
     canvas.style.display = isFlorette ? "" : "none";
 
-    // Florette controls/tabs/states: visible on florette and email sig, hidden on wallpaper
+    // Florette controls/tabs/states: visible on florette and email sig
     var showFloretteUI = isFlorette || isEmailSig;
     florTabs.style.display = showFloretteUI ? "" : "none";
     florControls.style.display = showFloretteUI ? "" : "none";
@@ -58,8 +59,13 @@ window.RA = window.RA || {};
     // Hide background color on non-florette tools
     bgColorGroup.style.display = isFlorette ? "" : "none";
 
-    // Show/hide email signature
-    emailSig.classList.toggle("active", isEmailSig);
+    // Show/hide email signature fields inside controls
+    var sigFields = document.getElementById("sigFields");
+    if (sigFields) sigFields.style.display = isEmailSig ? "" : "none";
+
+    // Show/hide email signature preview (keep email-sig section hidden, fields are in controls)
+    emailSig.style.display = "none";
+    emailSig.classList.remove("active");
     sigPreview.classList.toggle("active", isEmailSig);
 
     // Show/hide wallpaper
@@ -76,7 +82,7 @@ window.RA = window.RA || {};
     // Background color per tool
     if (isFlorette) {
       document.body.style.backgroundColor = savedBgColor;
-      nav.classList.remove("tool-nav--light");
+      nav.classList.toggle("tool-nav--light", isLightOrTransparent(savedBgColor));
     } else {
       // Only snapshot florette color when we are actually leaving florette.
       if (previousTool === "florette") {
@@ -94,12 +100,49 @@ window.RA = window.RA || {};
     currentTool = toolId;
   }
 
-  buttons.forEach(function (btn) {
-    btn.addEventListener("click", function () {
-      switchTool(btn.dataset.tool);
-    });
+  toolSelect.addEventListener("change", function () {
+    switchTool(toolSelect.value);
   });
 
   // Default: hide email sig section
   emailSig.style.display = "none";
+
+  // Toggle nav to light style when florette bg is light or transparent
+  function isLightOrTransparent(color) {
+    if (!color) return false;
+    var v = color.trim().toLowerCase();
+    if (v === "transparent" || v === "rgba(0, 0, 0, 0)") return true;
+    var r, g, b;
+    // Parse hex
+    var hex = v.replace("#", "");
+    if (/^[0-9a-f]{6}$/i.test(hex)) {
+      r = parseInt(hex.substring(0, 2), 16);
+      g = parseInt(hex.substring(2, 4), 16);
+      b = parseInt(hex.substring(4, 6), 16);
+    } else {
+      // Parse rgb(r, g, b) or rgba(r, g, b, a)
+      var match = v.match(/rgba?\(\s*(\d+)\s*,\s*(\d+)\s*,\s*(\d+)/);
+      if (match) {
+        r = parseInt(match[1], 10);
+        g = parseInt(match[2], 10);
+        b = parseInt(match[3], 10);
+      } else {
+        return false;
+      }
+    }
+    return (r * 299 + g * 587 + b * 114) / 1000 > 160;
+  }
+
+  function syncNavTheme() {
+    if (currentTool !== "florette") return;
+    var bg = document.body.style.backgroundColor || "";
+    nav.classList.toggle("tool-nav--light", isLightOrTransparent(bg));
+  }
+
+  // Listen for florette swatch clicks
+  document.addEventListener("click", function (e) {
+    if (e.target.closest && e.target.closest(".combo-swatch[data-color]")) {
+      setTimeout(syncNavTheme, 0);
+    }
+  });
 })();

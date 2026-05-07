@@ -340,4 +340,186 @@
     isRotating = false;
     cumulativeRotation = 0;
   });
+
+  // ── Export ──
+
+  function drawFloretteToCtx(tCtx, sz, state, rot, bgColor) {
+    tCtx.clearRect(0, 0, sz, sz);
+    var corners = state.corners;
+    var count = state.numberOfRectangles || 9;
+    if (!corners && window.RA && window.RA.states) {
+      corners = window.RA.states.getCornerOffsets(state);
+    }
+    if (!corners) return;
+
+    var maxR = 0;
+    for (var i = 0; i < corners.length; i++) {
+      var r = Math.sqrt(corners[i][0] * corners[i][0] + corners[i][1] * corners[i][1]);
+      if (r > maxR) maxR = r;
+    }
+    var scale = maxR > 0 ? (sz * 0.42) / maxR : 1;
+
+    tCtx.save();
+    tCtx.translate(sz / 2, sz / 2);
+    tCtx.rotate(rot);
+    for (var i = 0; i < count; i++) {
+      var angle = ((Math.PI * 2) / count) * i;
+      tCtx.save();
+      tCtx.rotate(angle);
+      tCtx.beginPath();
+      tCtx.moveTo(corners[0][0] * scale, corners[0][1] * scale);
+      for (var j = 1; j < corners.length; j++) {
+        tCtx.lineTo(corners[j][0] * scale, corners[j][1] * scale);
+      }
+      tCtx.closePath();
+      tCtx.fillStyle = "#FEB36B";
+      tCtx.fill();
+      tCtx.restore();
+    }
+    if (foilLoaded) {
+      tCtx.globalCompositeOperation = "source-in";
+      tCtx.drawImage(foilImage, -sz / 2, -sz / 2, sz, sz);
+      tCtx.globalCompositeOperation = "source-over";
+    }
+    tCtx.restore();
+
+    // Fill background behind the florette (skip for transparent export)
+    if (!isBgTransparent(bgColor)) {
+      tCtx.globalCompositeOperation = "destination-over";
+      tCtx.fillStyle = bgColor || "#ffffff";
+      tCtx.fillRect(0, 0, sz, sz);
+      tCtx.globalCompositeOperation = "source-over";
+    }
+  }
+
+  function isBgTransparent(bg) {
+    if (!bg) return false;
+    var v = bg.trim().toLowerCase();
+    return v === "transparent" || v === "rgba(0, 0, 0, 0)";
+  }
+
+  function downloadBlob(blob, filename) {
+    var url = URL.createObjectURL(blob);
+    var a = document.createElement("a");
+    a.href = url;
+    a.download = filename;
+    document.body.appendChild(a);
+    a.click();
+    document.body.removeChild(a);
+    URL.revokeObjectURL(url);
+  }
+
+  function exportStatic(format, multiplier) {
+    var baseSz = 512;
+    var sz = baseSz * multiplier;
+    var c = document.createElement("canvas");
+    c.width = sz;
+    c.height = sz;
+    var ctx = c.getContext("2d");
+    var snap = window.RA.controls.snapshot();
+    var bg = document.body.style.backgroundColor || "#170901";
+
+    if (format === "jpg") {
+      drawFloretteToCtx(ctx, sz, snap, 0, isBgTransparent(bg) ? "#ffffff" : bg);
+      c.toBlob(function (blob) {
+        downloadBlob(blob, "florette-" + sz + "x" + sz + ".jpg");
+      }, "image/jpeg", 0.95);
+    } else {
+      drawFloretteToCtx(ctx, sz, snap, 0, bg);
+      c.toBlob(function (blob) {
+        downloadBlob(blob, "florette-" + sz + "x" + sz + ".png");
+      }, "image/png");
+    }
+  }
+
+  var exportToast = null;
+
+  function showExportToast(msg) {
+    if (!exportToast) {
+      exportToast = document.createElement("div");
+      exportToast.className = "state-toast";
+      exportToast.setAttribute("role", "status");
+      exportToast.setAttribute("aria-live", "polite");
+      document.body.appendChild(exportToast);
+    }
+    exportToast.textContent = msg;
+    exportToast.classList.add("state-toast--visible");
+  }
+
+  function hideExportToast() {
+    if (exportToast) exportToast.classList.remove("state-toast--visible");
+  }
+
+  function exportGif(totalFrames) {
+    var statesArr = window.RA.states.getStates();
+    if (statesArr.length < 2) {
+      statesArr = [window.RA.controls.snapshot()];
+    }
+
+    showExportToast("Generating GIF...");
+
+    var bg = document.body.style.backgroundColor || "#170901";
+    var fillBg = isBgTransparent(bg) ? "transparent" : bg;
+    var gifSize = 400;
+    var gifCanvas = document.createElement("canvas");
+    gifCanvas.width = gifSize;
+    gifCanvas.height = gifSize;
+    var gifCtx = gifCanvas.getContext("2d", { willReadFrequently: true });
+
+    setTimeout(function () {
+      var encoder = new MiniGIF.Encoder(gifSize, gifSize);
+
+      if (statesArr.length >= 2) {
+        // Match live playback timing exactly
+        var segDurationMs = window.RA.states.TRANSITION_DURATION_MS;
+        var totalSegments = statesArr.length;
+        var totalDurationMs = segDurationMs * totalSegments;
+        // fps derived from frame count and total duration
+        var frameDelayMs = totalDurationMs / totalFrames;
+        // Live canvas rotates 0.025 deg per frame at ~60fps = 1.5 deg/sec
+        // Convert to radians per ms, then per gif frame
+        var degPerSec = 0.025 * 60;
+        var radPerMs = (degPerSec * Math.PI) / (180 * 1000);
+
+        for (var f = 0; f < totalFrames; f++) {
+          var timeMs = f * frameDelayMs;
+          var segFloat = timeMs / segDurationMs;
+          var seg = Math.floor(segFloat) % totalSegments;
+          var localT = segFloat - Math.floor(segFloat);
+          var sA = statesArr[seg];
+          var sB = statesArr[(seg + 1) % totalSegments];
+          var state = window.RA.states.interpolateStates(sA, sB, localT);
+          var rot = radPerMs * timeMs;
+          drawFloretteToCtx(gifCtx, gifSize, state, rot, fillBg);
+          encoder.addFrame(gifCtx, Math.round(frameDelayMs));
+        }
+      } else {
+        drawFloretteToCtx(gifCtx, gifSize, statesArr[0], 0, fillBg);
+        encoder.addFrame(gifCtx, 100);
+      }
+
+      showExportToast("Encoding...");
+
+      setTimeout(function () {
+        var gifBlob = encoder.render();
+        downloadBlob(gifBlob, "florette-" + totalFrames + "f.gif");
+        showExportToast("GIF exported!");
+        setTimeout(hideExportToast, 1500);
+      }, 50);
+    }, 50);
+  }
+
+  window.addEventListener("exportFlorette", function (event) {
+    var val = event.detail.format;
+    if (val.indexOf("gif") === 0) {
+      var gifParts = val.split("-");
+      var frames = gifParts[1] ? parseInt(gifParts[1], 10) : 60;
+      exportGif(frames);
+    } else {
+      var parts = val.split("-");
+      var fmt = parts[0];
+      var multiplier = parseInt(parts[1], 10) || 1;
+      exportStatic(fmt, multiplier);
+    }
+  });
 })();

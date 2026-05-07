@@ -5,7 +5,12 @@ window.RA.emailSignature = (function () {
   preview.className = "sig-preview";
   preview.innerHTML = [
     '<div class="sig-preview__card">',
-    '  <img class="sig-preview__logo" src="assets/images/HPA_Logo_Mar.svg" alt="Hariri Pontarini Architects">',
+    '  <div class="sig-preview__info">',
+    '    <p class="sig-preview__name" id="sigPreviewName"></p>',
+    '    <p class="sig-preview__role" id="sigPreviewRole"></p>',
+    '    <p class="sig-preview__credentials" id="sigPreviewCredentials"></p>',
+    '  </div>',
+    '  <img class="sig-preview__logo" src="assets/logos/final_logos/hpa_logo_single_row.svg" alt="Hariri Pontarini Architects">',
     '  <div class="sig-preview__florette">',
     '    <canvas class="sig-preview__florette-canvas" id="sigFloretteCanvas" width="120" height="120"></canvas>',
     "  </div>",
@@ -231,7 +236,7 @@ window.RA.emailSignature = (function () {
       lx.drawImage(img, 0, 0, w, h);
       callback(c.toDataURL("image/jpeg", 0.95));
     };
-    img.src = "assets/images/HPA_Logo_Mar.svg";
+    img.src = "assets/logos/final_logos/hpa_logo_single_row.svg";
   }
 
   // ── Render address text in Bradford to PNG data URI ──
@@ -398,14 +403,31 @@ window.RA.emailSignature = (function () {
 
           // Render logo SVG to PNG
           renderLogoToJpeg(function (logoDataUri) {
+            var nameVal = (sigNameInput.value || "").trim();
+            var roleVal = (sigRoleInput.value || "").trim();
+            var credVal = (sigCredentialsInput.value || "").trim();
+
+            var nameRow = nameVal
+              ? '  <tr><td style="font-family:Georgia,serif;font-size:22px;line-height:1.3;color:#3B2314;padding-bottom:14px;">' + nameVal + "</td></tr>"
+              : "";
+            var roleRow = roleVal
+              ? '  <tr><td style="font-family:Arial,Helvetica,sans-serif;font-size:13px;line-height:1.5;font-weight:700;letter-spacing:0.04em;text-transform:uppercase;color:#3B2314;padding-bottom:2px;">' + roleVal + "</td></tr>"
+              : "";
+            var credRow = credVal
+              ? '  <tr><td style="font-family:Arial,Helvetica,sans-serif;font-size:13px;line-height:1.5;font-weight:400;letter-spacing:0.04em;text-transform:uppercase;color:#3B2314;">' + credVal + "</td></tr>"
+              : "";
+
             // Build standalone HTML page — GIF uses hosted URL, rest are data URIs
             lastSignaturePageHtml = [
               "<!DOCTYPE html>",
               '<html><head><meta charset="UTF-8"><style>body{margin:40px;background:#fff;}</style></head>',
               "<body>",
               '<table cellpadding="0" cellspacing="0" border="0">',
+              nameRow,
+              roleRow,
+              credRow,
               "  <tr>",
-              "    <td>",
+              '    <td style="padding-top:64px;">',
               '      <img src="' +
                 logoDataUri +
                 '" width="480" alt="Hariri Pontarini Architects" style="display:block;height:auto;" />',
@@ -441,7 +463,9 @@ window.RA.emailSignature = (function () {
             // Show preview in the panel
             resultPreview.innerHTML = [
               '<table cellpadding="0" cellspacing="0" border="0">',
-              "  <tr><td>",
+              nameRow,
+              roleRow,
+              '  <tr><td style="padding-top:64px;">',
               '    <img src="' +
                 logoDataUri +
                 '" width="480" style="display:block;height:auto;" />',
@@ -506,6 +530,27 @@ window.RA.emailSignature = (function () {
     var blob = new Blob([lastSignaturePageHtml], { type: "text/html" });
     var url = URL.createObjectURL(blob);
     window.open(url, "_blank");
+  });
+
+  // ── Name, Role & Credentials inputs ──
+
+  var sigNameInput = document.getElementById("sigName");
+  var sigRoleInput = document.getElementById("sigRole");
+  var sigCredentialsInput = document.getElementById("sigCredentials");
+  var sigPreviewName = document.getElementById("sigPreviewName");
+  var sigPreviewRole = document.getElementById("sigPreviewRole");
+  var sigPreviewCredentials = document.getElementById("sigPreviewCredentials");
+
+  sigNameInput.addEventListener("input", function () {
+    sigPreviewName.textContent = sigNameInput.value;
+  });
+
+  sigRoleInput.addEventListener("input", function () {
+    sigPreviewRole.textContent = sigRoleInput.value;
+  });
+
+  sigCredentialsInput.addEventListener("input", function () {
+    sigPreviewCredentials.textContent = sigCredentialsInput.value;
   });
 
   function init() {}
