@@ -239,7 +239,76 @@ window.RA.emailSignature = (function () {
     img.src = "assets/logos/final_logos/hpa_logo_single_row.svg";
   }
 
-  // ── Render address text in Bradford to PNG data URI ──
+  // ── Render text fields to image data URIs ──
+
+  function renderTextToJpeg(text, opts) {
+    var scale = 3;
+    var fontSize = opts.fontSize * scale;
+    var lineHeight = fontSize * 1.3;
+    var cw = 560 * scale;
+    var ch = Math.ceil(lineHeight + 4 * scale);
+
+    var c = document.createElement("canvas");
+    c.width = cw;
+    c.height = ch;
+    var ax = c.getContext("2d");
+    ax.fillStyle = opts.color || "#3B2314";
+    ax.textBaseline = "top";
+    if (opts.letterSpacing) {
+      // Canvas doesn't support letterSpacing natively in all browsers,
+      // but modern browsers do via the letterSpacing property
+      ax.letterSpacing = opts.letterSpacing;
+    }
+    var weight = opts.fontWeight || "normal";
+    var style = opts.fontStyle || "";
+    ax.font = (style ? style + " " : "") + (weight !== "normal" ? weight + " " : "") + fontSize + "px " + opts.fontFamily;
+    var displayText = opts.uppercase ? text.toUpperCase() : text;
+    ax.fillText(displayText, 0, 0);
+
+    var textWidth = ax.measureText(displayText).width;
+    // Compute display width at 1x (scaled down from 3x canvas)
+    var displayWidth = Math.ceil(textWidth / scale);
+
+    var out = document.createElement("canvas");
+    out.width = cw;
+    out.height = ch;
+    var ox = out.getContext("2d");
+    ox.fillStyle = "#ffffff";
+    ox.fillRect(0, 0, cw, ch);
+    ox.drawImage(c, 0, 0);
+    return { dataUri: out.toDataURL("image/jpeg", 0.95), width: Math.min(displayWidth, 480) };
+  }
+
+  function renderNameToJpeg(text) {
+    return renderTextToJpeg(text, {
+      fontSize: 22,
+      fontFamily: "'EK Notice Classic', sans-serif",
+      fontWeight: "normal",
+      color: "#3B2314",
+    });
+  }
+
+  function renderRoleToJpeg(text) {
+    return renderTextToJpeg(text, {
+      fontSize: 13,
+      fontFamily: "Bradford, Georgia, serif",
+      fontWeight: "bold",
+      uppercase: true,
+      letterSpacing: "0.04em",
+      color: "#3B2314",
+    });
+  }
+
+  function renderCredentialsToJpeg(text) {
+    return renderTextToJpeg(text, {
+      fontSize: 13,
+      fontFamily: "'EK Notice Classic', sans-serif",
+      fontWeight: "normal",
+      uppercase: true,
+      letterSpacing: "0.04em",
+      color: "#3B2314",
+    });
+  }
 
   function renderAddressToPng() {
     var scale = 3; // 3x for retina sharpness
@@ -397,24 +466,28 @@ window.RA.emailSignature = (function () {
         .then(function (data) {
           var gifUrl = data.url;
 
-          // Render address and URL text as images in Bradford
+          // Render all text fields as images for consistent fonts in email clients
           var addressDataUri = renderAddressToPng();
           var urlImg = renderUrlToPng();
 
+          var nameVal = (sigNameInput.value || "").trim();
+          var roleVal = (sigRoleInput.value || "").trim();
+          var credVal = (sigCredentialsInput.value || "").trim();
+
+          var nameImg = nameVal ? renderNameToJpeg(nameVal) : null;
+          var roleImg = roleVal ? renderRoleToJpeg(roleVal) : null;
+          var credImg = credVal ? renderCredentialsToJpeg(credVal) : null;
+
           // Render logo SVG to PNG
           renderLogoToJpeg(function (logoDataUri) {
-            var nameVal = (sigNameInput.value || "").trim();
-            var roleVal = (sigRoleInput.value || "").trim();
-            var credVal = (sigCredentialsInput.value || "").trim();
-
-            var nameRow = nameVal
-              ? '  <tr><td style="font-family:Georgia,serif;font-size:22px;line-height:1.3;color:#3B2314;padding-bottom:14px;">' + nameVal + "</td></tr>"
+            var nameRow = nameImg
+              ? '  <tr><td style="padding-bottom:14px;"><img src="' + nameImg.dataUri + '" width="' + nameImg.width + '" alt="' + nameVal + '" style="display:block;height:auto;" /></td></tr>'
               : "";
-            var roleRow = roleVal
-              ? '  <tr><td style="font-family:Arial,Helvetica,sans-serif;font-size:13px;line-height:1.5;font-weight:700;letter-spacing:0.04em;text-transform:uppercase;color:#3B2314;padding-bottom:2px;">' + roleVal + "</td></tr>"
+            var roleRow = roleImg
+              ? '  <tr><td style="padding-bottom:2px;"><img src="' + roleImg.dataUri + '" width="' + roleImg.width + '" alt="' + roleVal + '" style="display:block;height:auto;" /></td></tr>'
               : "";
-            var credRow = credVal
-              ? '  <tr><td style="font-family:Arial,Helvetica,sans-serif;font-size:13px;line-height:1.5;font-weight:400;letter-spacing:0.04em;text-transform:uppercase;color:#3B2314;">' + credVal + "</td></tr>"
+            var credRow = credImg
+              ? '  <tr><td><img src="' + credImg.dataUri + '" width="' + credImg.width + '" alt="' + credVal + '" style="display:block;height:auto;" /></td></tr>'
               : "";
 
             // Build standalone HTML page — GIF uses hosted URL, rest are data URIs
@@ -465,6 +538,7 @@ window.RA.emailSignature = (function () {
               '<table cellpadding="0" cellspacing="0" border="0">',
               nameRow,
               roleRow,
+              credRow,
               '  <tr><td style="padding-top:64px;">',
               '    <img src="' +
                 logoDataUri +
