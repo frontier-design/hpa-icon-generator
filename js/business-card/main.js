@@ -25,9 +25,41 @@ window.RA.businessCard = (function () {
     <textarea id="bcCredsInput" class="sig-input bc-panel-textarea" rows="2" placeholder="OAA, AAA, ARCHITECT AIBC, FRAIC, INTL. ASSOC. AIA"></textarea>
   </div>
   <div class="control-group">
+    <label class="control-label">Display Options</label>
+    <div class="bc-toggles">
+      <div class="bc-toggle-row">
+        <span class="bc-toggle-label">Front Fill</span>
+        <button type="button" class="bc-toggle-switch active" id="bcToggleFrontBg" role="switch" aria-checked="true"><span class="bc-toggle-knob"></span></button>
+      </div>
+      <div class="bc-toggle-row">
+        <span class="bc-toggle-label">Back Fill</span>
+        <button type="button" class="bc-toggle-switch active" id="bcToggleBackBg" role="switch" aria-checked="true"><span class="bc-toggle-knob"></span></button>
+      </div>
+      <div class="bc-toggle-row">
+        <span class="bc-toggle-label">Crop Marks</span>
+        <button type="button" class="bc-toggle-switch active" id="bcToggleCropMarks" role="switch" aria-checked="true"><span class="bc-toggle-knob"></span></button>
+      </div>
+      <div class="bc-toggle-row">
+        <span class="bc-toggle-label">Card Border</span>
+        <button type="button" class="bc-toggle-switch" id="bcToggleCardBorder" role="switch" aria-checked="false"><span class="bc-toggle-knob"></span></button>
+      </div>
+      <div class="bc-toggle-row">
+        <span class="bc-toggle-label">Bleed Border</span>
+        <button type="button" class="bc-toggle-switch" id="bcToggleBleedBorder" role="switch" aria-checked="false"><span class="bc-toggle-knob"></span></button>
+      </div>
+      <div class="bc-toggle-row">
+        <span class="bc-toggle-label">Black & White</span>
+        <button type="button" class="bc-toggle-switch" id="bcToggleBW" role="switch" aria-checked="false"><span class="bc-toggle-knob"></span></button>
+      </div>
+    </div>
+  </div>
+  <div class="control-group">
     <label class="control-label">Export</label>
     <div class="undo-redo-row">
-      <button type="button" id="bcDownloadBtn">Download Print Ready PDF</button>
+      <button type="button" id="bcDownloadBtn">Export for CMYK</button>
+    </div>
+    <div class="undo-redo-row">
+      <button type="button" id="bcDownloadPmsBtn">Export for PMS</button>
     </div>
   </div>
 </div>
@@ -144,6 +176,7 @@ Lopez</div>
   var FLORETTE_SQUARE_PX = 120;
   var FLORETTE_COLOR = "#FEB36B";
   var FLORETTE_FIT_FACTOR = 0.5;
+  var bwMode = false;
   var foilImage = new Image();
   var foilLoaded = false;
   foilImage.src = "assets/images/HPA_Florette_Foil.jpg";
@@ -218,13 +251,13 @@ Lopez</div>
         ctx.lineTo(corners[k][0] * scale, corners[k][1] * scale);
       }
       ctx.closePath();
-      ctx.fillStyle = FLORETTE_COLOR;
+      ctx.fillStyle = bwMode ? "#000" : FLORETTE_COLOR;
       ctx.fill();
       ctx.restore();
     }
     ctx.restore();
 
-    if (foilLoaded) {
+    if (!bwMode && foilLoaded) {
       ctx.globalCompositeOperation = "source-in";
       ctx.drawImage(foilImage, 0, 0, FLORETTE_SQUARE_PX, FLORETTE_SQUARE_PX);
       ctx.globalCompositeOperation = "source-over";
@@ -332,12 +365,106 @@ Lopez</div>
   window.addEventListener("resize", fitBackName);
   window.addEventListener("updateRays", drawFloretteSquares);
 
+  var toggles = [
+    { id: "bcToggleFrontBg",     offClass: "bc-hide-front-bg" },
+    { id: "bcToggleBackBg",      offClass: "bc-hide-back-bg" },
+    { id: "bcToggleCropMarks",   offClass: "bc-hide-crop-marks" },
+    { id: "bcToggleCardBorder",  onClass: "bc-show-card-border", defaultOff: true },
+    { id: "bcToggleBleedBorder", onClass: "bc-show-bleed-border", defaultOff: true },
+    { id: "bcToggleBW",          onClass: "bc-black-white", defaultOff: true },
+  ];
+
+  toggles.forEach(function (cfg) {
+    var btn = document.getElementById(cfg.id);
+    if (!btn) return;
+
+    btn.addEventListener("click", function () {
+      btn.classList.toggle("active");
+      var isActive = btn.classList.contains("active");
+      btn.setAttribute("aria-checked", isActive ? "true" : "false");
+
+      if (cfg.offClass) {
+        preview.classList.toggle(cfg.offClass, !isActive);
+      }
+      if (cfg.onClass) {
+        preview.classList.toggle(cfg.onClass, isActive);
+      }
+
+      if (cfg.id === "bcToggleBW") {
+        bwMode = isActive;
+        drawFloretteSquares();
+      }
+    });
+  });
+
   var downloadBtn = document.getElementById("bcDownloadBtn");
   downloadBtn.addEventListener("click", function () {
     var previousTitle = document.title;
     document.title = "business-card-letter";
     window.print();
     document.title = previousTitle;
+  });
+
+  function clonePmsFlorettePage(sourcePage, label) {
+    var clone = sourcePage.cloneNode(true);
+    clone.classList.add("bc-pms-sep-page");
+
+    var pageLabel = document.createElement("span");
+    pageLabel.className = "bc-pms-label";
+    pageLabel.textContent = label === "front" ? "Front Florette Layer" : "Back Florette Layer";
+    var trim = clone.querySelector(".bc-trim-box");
+    if (trim) trim.appendChild(pageLabel);
+
+    return clone;
+  }
+
+  var downloadPmsBtn = document.getElementById("bcDownloadPmsBtn");
+  downloadPmsBtn.addEventListener("click", function () {
+    var pages = preview.querySelector(".bc-preview-pages");
+    var frontPage = preview.querySelector(".bc-preview-page--front");
+    var backPage = preview.querySelector(".bc-preview-page--back");
+
+    var prevBwMode = bwMode;
+    bwMode = true;
+    drawFloretteSquares();
+
+    preview.classList.add("bc-pms-mode");
+    preview.classList.add("bc-black-white");
+    preview.classList.add("bc-hide-front-bg");
+    preview.classList.add("bc-hide-back-bg");
+
+    var frontSep = clonePmsFlorettePage(frontPage, "front");
+    var backSep = clonePmsFlorettePage(backPage, "back");
+    pages.appendChild(frontSep);
+    pages.appendChild(backSep);
+
+    var previousTitle = document.title;
+    document.title = "business-card-pms";
+
+    requestAnimationFrame(function () {
+      window.print();
+      document.title = previousTitle;
+      preview.classList.remove("bc-pms-mode");
+      pages.removeChild(frontSep);
+      pages.removeChild(backSep);
+
+      var bwBtn = document.getElementById("bcToggleBW");
+      var frontBgBtn = document.getElementById("bcToggleFrontBg");
+      var backBgBtn = document.getElementById("bcToggleBackBg");
+
+      if (!bwBtn || !bwBtn.classList.contains("active")) {
+        preview.classList.remove("bc-black-white");
+      }
+      if (!frontBgBtn || frontBgBtn.classList.contains("active")) {
+        preview.classList.remove("bc-hide-front-bg");
+      }
+      if (!backBgBtn || backBgBtn.classList.contains("active")) {
+        preview.classList.remove("bc-hide-back-bg");
+      }
+
+      bwMode = prevBwMode;
+      drawFloretteSquares();
+    });
   });
 
   syncBackFields();

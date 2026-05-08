@@ -197,7 +197,22 @@ window.RA = window.RA || {};
     switchTool(toolSelect.value);
   });
 
+  var isPrinting = false;
+
+  window.addEventListener("beforeprint", function () {
+    isPrinting = true;
+  });
+
+  window.addEventListener("afterprint", function () {
+    isPrinting = true;
+    setTimeout(function () {
+      isPrinting = false;
+      syncToolAvailabilityInSelect();
+    }, 500);
+  });
+
   function handleViewportChange() {
+    if (isPrinting) return;
     var previousTool = currentTool;
     syncToolAvailabilityInSelect();
     if (!isDesktop() && isDesktopOnlyTool(previousTool)) {

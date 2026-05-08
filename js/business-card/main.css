@@ -39,7 +39,7 @@
 
 .bc-preview-page {
   --bc-text-color: #51382d;
-  --bc-crop-stroke: 0.15px;
+  --bc-crop-stroke: 0.25px;
   position: relative;
   width: min(
     620px,
@@ -56,7 +56,7 @@
   max-height: calc(100vh - (2 * var(--bc-preview-padding)));
   aspect-ratio: 8.5 / 11;
   background: #fff;
-  border: 1px solid #d9d9d9;
+  border: 0.25px solid #d9d9d9;
   flex: 0 1 auto;
 }
 
@@ -332,6 +332,177 @@
   height: 100%;
 }
 
+/* Toggle switches */
+.bc-toggles {
+  display: flex;
+  flex-direction: column;
+  gap: 0;
+}
+
+.bc-toggle-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 8px 0;
+}
+
+.bc-toggle-label {
+  font-family: 'EK Notice Classic', sans-serif;
+  font-size: 0.75rem;
+  line-height: 1.35;
+  font-weight: 600;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  color: #51382d;
+}
+
+.control-group .bc-toggle-switch,
+.bc-toggle-switch {
+  position: relative;
+  width: 36px;
+  min-width: 36px;
+  max-width: 36px;
+  height: 20px;
+  min-height: 20px;
+  max-height: 20px;
+  padding: 0;
+  margin: 0;
+  border: none;
+  border-radius: 10px;
+  background: #D9CFBF;
+  cursor: pointer;
+  flex-shrink: 0;
+  flex-grow: 0;
+  transition: background 0.2s ease;
+  box-sizing: border-box;
+}
+
+.control-group .bc-toggle-switch:hover {
+  background: #C8BFAF;
+  border-color: transparent;
+  color: inherit;
+}
+
+.bc-toggle-switch .bc-toggle-knob {
+  position: absolute;
+  top: 2px;
+  left: 2px;
+  width: 16px;
+  height: 16px;
+  border-radius: 50%;
+  background: #fff;
+  transition: transform 0.2s ease;
+  pointer-events: none;
+}
+
+.control-group .bc-toggle-switch.active,
+.bc-toggle-switch.active {
+  background: #51382d;
+}
+
+.control-group .bc-toggle-switch.active:hover {
+  background: #3B2314;
+  border-color: transparent;
+  color: inherit;
+}
+
+.bc-toggle-switch.active .bc-toggle-knob {
+  transform: translateX(16px);
+}
+
+/* Toggle-off states */
+.bc-hide-front-bg .bc-preview-page--front .bc-bleed-box {
+  background: transparent;
+}
+
+.bc-hide-back-bg .bc-preview-page--back .bc-bleed-box {
+  background: transparent;
+}
+
+.bc-hide-crop-marks .bc-corner-squares {
+  display: none;
+}
+
+.bc-show-card-border .bc-trim-box::before {
+  border: 0.25px solid rgba(0, 0, 0, 0.2);
+}
+
+.bc-hide-card-border .bc-trim-box::before {
+  border: none;
+}
+
+.bc-hide-bleed-border .bc-bleed-box {
+  outline: none;
+}
+
+.bc-show-bleed-border .bc-bleed-box {
+  outline: 0.25px dashed rgba(0, 0, 0, 0.25);
+}
+
+/* Black & white mode for PMS printing */
+.bc-black-white .bc-preview-page {
+  --bc-text-color: #000;
+}
+
+.bc-black-white .bc-bleed-box {
+  background: #e6e6e6;
+}
+
+
+.bc-black-white.bc-hide-front-bg .bc-preview-page--front .bc-bleed-box,
+.bc-black-white.bc-hide-back-bg .bc-preview-page--back .bc-bleed-box {
+  background: transparent;
+}
+
+/* PMS export: hide florettes on main pages */
+.bc-pms-mode .bc-top-left-marker,
+.bc-pms-mode .bc-back-phone-square {
+  visibility: hidden;
+}
+
+/* PMS separation pages: blank card with only the florette */
+.bc-pms-sep-page .bc-bleed-box {
+  background: transparent;
+}
+
+/* PMS separation pages: identical layout, everything invisible except florettes */
+.bc-pms-sep-page .bc-bleed-box,
+.bc-pms-sep-page .bc-trim-logo,
+.bc-pms-sep-page .bc-address,
+.bc-pms-sep-page .bc-url,
+.bc-pms-sep-page .bc-back-name,
+.bc-pms-sep-page .bc-back-phone,
+.bc-pms-sep-page .bc-back-email,
+.bc-pms-sep-page .bc-back-meta {
+  opacity: 0;
+}
+
+.bc-pms-sep-page .bc-top-left-marker,
+.bc-pms-sep-page .bc-back-phone-square {
+  visibility: visible !important;
+  opacity: 1;
+}
+
+.bc-pms-sep-page .bc-florette-square-canvas {
+  opacity: 1;
+}
+
+.bc-pms-label {
+  position: absolute;
+  top: -0.5in;
+  left: 0;
+  font-family: "EK Notice Classic", sans-serif;
+  font-size: 6pt;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: #000;
+}
+
+/* Hide separation pages in normal view */
+.bc-pms-sep-page {
+  display: none;
+}
+
 @media print {
   @page {
     size: letter;
@@ -347,6 +518,8 @@
     position: static;
     inset: auto;
     padding: 0;
+    margin: 0;
+    border: none !important;
     background: transparent;
   }
 
@@ -356,16 +529,34 @@
   }
 
   .bc-preview-page {
-    --bc-crop-stroke: 0.08px;
+    --bc-crop-stroke: 0.25px;
     width: 8.5in;
     height: 11in;
-    border: 0;
+    border: none !important;
+    outline: none !important;
+    box-shadow: none !important;
     margin: 0;
+    padding: 0;
+    background: #fff;
     page-break-after: always;
     break-after: page;
+    max-width: none;
+    max-height: none;
   }
 
   .bc-preview-page:last-child {
+    page-break-after: auto;
+    break-after: auto;
+  }
+
+  .bc-pms-mode .bc-pms-sep-page {
+    display: block;
+    page-break-after: always;
+    break-after: page;
+    background: #fff;
+  }
+
+  .bc-pms-mode .bc-pms-sep-page:last-child {
     page-break-after: auto;
     break-after: auto;
   }
