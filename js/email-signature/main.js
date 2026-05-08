@@ -619,8 +619,21 @@ window.RA.emailSignature = (function () {
     sigPreviewRole.textContent = sigRoleInput.value;
   });
 
+  function formatCredentials(raw) {
+    return raw
+      .split(/[,\s]+/)
+      .filter(Boolean)
+      .join(", ");
+  }
+
   sigCredentialsInput.addEventListener("input", function () {
     sigPreviewCredentials.textContent = sigCredentialsInput.value;
+  });
+
+  sigCredentialsInput.addEventListener("blur", function () {
+    var formatted = formatCredentials(sigCredentialsInput.value);
+    sigCredentialsInput.value = formatted;
+    sigPreviewCredentials.textContent = formatted;
   });
 
   function init() {}

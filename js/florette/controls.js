@@ -8,16 +8,16 @@ window.RA.controls = (function () {
 
     <div class="sig-fields" id="sigFields" style="display:none;">
       <div class="control-group">
-        <label for="sigName">Name</label>
-        <input type="text" id="sigName" class="sig-input" placeholder="Siamak Hariri">
+        <label for="sigName">Name &amp; Surname</label>
+        <input type="text" id="sigName" class="sig-input" placeholder="Name & Surname">
       </div>
       <div class="control-group">
         <label for="sigRole">Role</label>
-        <input type="text" id="sigRole" class="sig-input" placeholder="Founding Partner">
+        <input type="text" id="sigRole" class="sig-input" placeholder="Role">
       </div>
       <div class="control-group">
         <label for="sigCredentials">Credentials</label>
-        <input type="text" id="sigCredentials" class="sig-input sig-input--uppercase" placeholder="OAA, AAA, AIBC, FRAIC, NSAA">
+        <input type="text" id="sigCredentials" class="sig-input sig-input--uppercase" placeholder="Credentials (OAA, AAA, AIBC...)">
       </div>
     </div>
 

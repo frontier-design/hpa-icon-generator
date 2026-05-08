@@ -10,7 +10,7 @@ window.RA.businessCard = (function () {
   </div>
   <div class="control-group">
     <label class="control-label" for="bcPhoneInput">Phone</label>
-    <input type="text" id="bcPhoneInput" class="sig-input" placeholder="+1 123 456 7890">
+    <input type="text" id="bcPhoneInput" class="sig-input" placeholder="123 456 7890">
   </div>
   <div class="control-group">
     <label class="control-label" for="bcEmailInput">Email</label>
@@ -27,7 +27,7 @@ window.RA.businessCard = (function () {
   <div class="control-group">
     <label class="control-label">Export</label>
     <div class="undo-redo-row">
-      <button type="button" id="bcDownloadBtn">Download Letter PDF</button>
+      <button type="button" id="bcDownloadBtn">Download Print Ready PDF</button>
     </div>
   </div>
 </div>
@@ -84,7 +84,7 @@ Lopez</div>
           <div class="bc-back-phone-square">
             <canvas id="bcBackFloretteSquare" class="bc-florette-square-canvas" aria-hidden="true"></canvas>
           </div>
-          <div class="bc-back-phone" id="bcBackPhone">+1 416 123 4567</div>
+          <div class="bc-back-phone" id="bcBackPhone">416 123 4567</div>
         </div>
       </div>
       <div class="bc-back-col bc-back-col--right">
@@ -154,7 +154,7 @@ Lopez</div>
 
   var defaults = {
     name: "Name",
-    phone: "+1 123 456 7890",
+    phone: "123 456 7890",
     email: "email@email.com",
     role: "role",
     credentials: "OAA, AAA, ARCHITECT AIBC, FRAIC, INTL. ASSOC. AIA",
@@ -294,7 +294,36 @@ Lopez</div>
     }
   }
 
-  [nameInput, phoneInput, emailInput, roleInput, credsInput].forEach(
+  function formatPhoneNumber(raw) {
+    var digits = raw.replace(/[^\d]/g, "");
+    if (digits.length === 0) return "";
+    var parts = [];
+    if (digits.length > 0) parts.push(digits.slice(0, 3));
+    if (digits.length > 3) parts.push(digits.slice(3, 6));
+    if (digits.length > 6) parts.push(digits.slice(6, 10));
+    return parts.join(" ");
+  }
+
+  phoneInput.addEventListener("input", function () {
+    var cursorPos = phoneInput.selectionStart;
+    var raw = phoneInput.value;
+    var formatted = formatPhoneNumber(raw);
+    if (formatted !== raw) {
+      var digitsBefore = raw.slice(0, cursorPos).replace(/[^\d]/g, "").length;
+      phoneInput.value = formatted;
+      var count = 0;
+      var newPos = 0;
+      for (var i = 0; i < formatted.length; i++) {
+        if (/\d/.test(formatted[i])) count++;
+        if (count >= digitsBefore) { newPos = i + 1; break; }
+      }
+      if (count < digitsBefore) newPos = formatted.length;
+      phoneInput.setSelectionRange(newPos, newPos);
+    }
+    syncBackFields();
+  });
+
+  [nameInput, emailInput, roleInput, credsInput].forEach(
     function (input) {
       input.addEventListener("input", syncBackFields);
     },
