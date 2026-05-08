@@ -284,11 +284,29 @@
     }
   }
 
+  function syncViewSizeToCanvas() {
+    var canvasEl = view && view.element ? view.element : null;
+    if (!canvasEl) return;
+
+    var width = canvasEl.clientWidth || window.innerWidth;
+    var height = canvasEl.clientHeight || window.innerHeight;
+    if (!width || !height) return;
+
+    if (view.viewSize.width !== width || view.viewSize.height !== height) {
+      view.viewSize = new paper.Size(width, height);
+    }
+  }
+
+  function refreshLayout() {
+    syncViewSizeToCanvas();
+    createRectangles();
+    applyRotation();
+  }
+
   createRectangles();
 
   view.onResize = function () {
-    createRectangles();
-    applyRotation();
+    refreshLayout();
   };
 
   view.onFrame = function () {
@@ -327,8 +345,17 @@
   });
 
   window.addEventListener("sheetLayout", function () {
-    createRectangles();
-    applyRotation();
+    refreshLayout();
+  });
+
+  // When Florette is shown after being hidden, force a layout sync so centering
+  // uses the latest viewport dimensions.
+  window.addEventListener("floretteVisible", function () {
+    requestAnimationFrame(function () {
+      requestAnimationFrame(function () {
+        refreshLayout();
+      });
+    });
   });
 
   window.addEventListener("playbackStarted", function () {

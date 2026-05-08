@@ -1,103 +1,126 @@
 window.RA = window.RA || {};
 
 window.RA.businessCard = (function () {
+  function renderPanelMarkup() {
+    return `
+<div class="control-panel__main">
+  <div class="control-group">
+    <label class="control-label" for="bcNameInput">Name</label>
+    <textarea id="bcNameInput" class="sig-input bc-panel-textarea" rows="3" placeholder="Name"></textarea>
+  </div>
+  <div class="control-group">
+    <label class="control-label" for="bcPhoneInput">Phone</label>
+    <input type="text" id="bcPhoneInput" class="sig-input" placeholder="+1 123 456 7890">
+  </div>
+  <div class="control-group">
+    <label class="control-label" for="bcEmailInput">Email</label>
+    <input type="text" id="bcEmailInput" class="sig-input" placeholder="email@email.com">
+  </div>
+  <div class="control-group">
+    <label class="control-label" for="bcRoleInput">Role</label>
+    <input type="text" id="bcRoleInput" class="sig-input" placeholder="role">
+  </div>
+  <div class="control-group">
+    <label class="control-label" for="bcCredsInput">Credentials</label>
+    <textarea id="bcCredsInput" class="sig-input bc-panel-textarea" rows="2" placeholder="OAA, AAA, ARCHITECT AIBC, FRAIC, INTL. ASSOC. AIA"></textarea>
+  </div>
+  <div class="control-group">
+    <label class="control-label">Export</label>
+    <div class="undo-redo-row">
+      <button type="button" id="bcDownloadBtn">Download Letter PDF</button>
+    </div>
+  </div>
+</div>
+`.trim();
+  }
+
+  function renderCornerSquaresMarkup() {
+    return `
+<div class="bc-corner-squares">
+  <span class="bc-corner-square bc-corner-square--tl"></span>
+  <span class="bc-corner-square bc-corner-square--tr"></span>
+  <span class="bc-corner-square bc-corner-square--bl"></span>
+  <span class="bc-corner-square bc-corner-square--br"></span>
+</div>
+`.trim();
+  }
+
+  function renderFrontPageMarkup() {
+    return `
+<div class="bc-preview-page bc-preview-page--front">
+  <div class="bc-bleed-box"></div>
+  <div class="bc-trim-box">
+    ${renderCornerSquaresMarkup()}
+    <img class="bc-trim-logo" src="assets/logos/final_logos/hpa_logo_single_row.svg" alt="HPA logo">
+    <div class="bc-address">
+      <span>235 CARLAW AV.,</span>
+      <span class="bc-address-italic">Suite 301</span>
+      <span>TORONTO, ONTARIO</span>
+      <span>CANADA, M4M 2S1</span>
+    </div>
+    <div class="bc-url-group">
+      <div class="bc-top-left-marker">
+        <canvas id="bcFrontFloretteSquare" class="bc-florette-square-canvas" aria-hidden="true"></canvas>
+      </div>
+      <span class="bc-url">HARIRIPONTARINI.COM</span>
+    </div>
+  </div>
+</div>
+`.trim();
+  }
+
+  function renderBackPageMarkup() {
+    return `
+<div class="bc-preview-page bc-preview-page--back">
+  <div class="bc-bleed-box"></div>
+  <div class="bc-trim-box">
+    ${renderCornerSquaresMarkup()}
+    <div class="bc-back-layout">
+      <div class="bc-back-col bc-back-col--left">
+        <div class="bc-back-name" id="bcBackName">Sebastian
+Andoni
+Lopez</div>
+        <div class="bc-back-phone-group">
+          <div class="bc-back-phone-square">
+            <canvas id="bcBackFloretteSquare" class="bc-florette-square-canvas" aria-hidden="true"></canvas>
+          </div>
+          <div class="bc-back-phone" id="bcBackPhone">+1 416 123 4567</div>
+        </div>
+      </div>
+      <div class="bc-back-col bc-back-col--right">
+        <div class="bc-back-email">
+          <span id="bcBackEmailUser">SANDONILOPEZ</span>
+          <span id="bcBackEmailDomain">@HP-ARCH.COM</span>
+        </div>
+        <div class="bc-back-meta">
+          <span class="bc-back-role" id="bcBackRole">FOUNDING PARTNER</span>
+          <div class="bc-back-credentials" id="bcBackCreds">
+            <span>OAA, AAA, ARCHITECT AIBC,</span>
+            <span>FRAIC, INTL. ASSOC. AIA</span>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+`.trim();
+  }
+
+  function renderPreviewMarkup() {
+    return `
+<div class="bc-preview-pages">
+  ${renderFrontPageMarkup()}
+  ${renderBackPageMarkup()}
+</div>
+`.trim();
+  }
+
   var panel = document.getElementById("sheet-business-card");
-  panel.innerHTML = [
-    '<div class="control-panel__main">',
-    '  <div class="control-group">',
-    '    <label class="control-label" for="bcNameInput">Name</label>',
-    '    <textarea id="bcNameInput" class="sig-input bc-panel-textarea" rows="3" placeholder="Name"></textarea>',
-    "  </div>",
-    '  <div class="control-group">',
-    '    <label class="control-label" for="bcPhoneInput">Phone</label>',
-    '    <input type="text" id="bcPhoneInput" class="sig-input" placeholder="+1 123 456 7890">',
-    "  </div>",
-    '  <div class="control-group">',
-    '    <label class="control-label" for="bcEmailInput">Email</label>',
-    '    <input type="text" id="bcEmailInput" class="sig-input" placeholder="email@email.com">',
-    "  </div>",
-    '  <div class="control-group">',
-    '    <label class="control-label" for="bcRoleInput">Role</label>',
-    '    <input type="text" id="bcRoleInput" class="sig-input" placeholder="role">',
-    "  </div>",
-    '  <div class="control-group">',
-    '    <label class="control-label" for="bcCredsInput">Credentials</label>',
-    '    <textarea id="bcCredsInput" class="sig-input bc-panel-textarea" rows="2" placeholder="OAA, AAA, ARCHITECT AIBC, FRAIC, INTL. ASSOC. AIA"></textarea>',
-    "  </div>",
-    '  <div class="control-group">',
-    '    <label class="control-label">Export</label>',
-    '    <div class="undo-redo-row">',
-    '      <button type="button" id="bcDownloadBtn">Download Letter PDF</button>',
-    "    </div>",
-    "  </div>",
-    "</div>",
-  ].join("\n");
+  panel.innerHTML = renderPanelMarkup();
 
   var preview = document.createElement("div");
   preview.className = "business-card-preview";
-  preview.innerHTML = [
-    '<div class="bc-preview-pages">',
-    '  <div class="bc-preview-page bc-preview-page--front">',
-    '    <div class="bc-bleed-box"></div>',
-    '    <div class="bc-trim-box">',
-    '      <div class="bc-corner-squares">',
-    '        <span class="bc-corner-square bc-corner-square--tl"></span>',
-    '        <span class="bc-corner-square bc-corner-square--tr"></span>',
-    '        <span class="bc-corner-square bc-corner-square--bl"></span>',
-    '        <span class="bc-corner-square bc-corner-square--br"></span>',
-    "      </div>",
-    '      <img class="bc-trim-logo" src="assets/logos/final_logos/hpa_logo_single_row.svg" alt="HPA logo">',
-    '      <div class="bc-address">',
-    '        <span>235 CARLAW AV.,</span>',
-    '        <span class="bc-address-italic">Suite 301</span>',
-    '        <span>TORONTO, ONTARIO</span>',
-    '        <span>CANADA, M4M 2S1</span>',
-    "      </div>",
-    '      <div class="bc-url-group">',
-    '        <div class="bc-top-left-marker">',
-    '          <canvas id="bcFrontFloretteSquare" class="bc-florette-square-canvas" aria-hidden="true"></canvas>',
-    "        </div>",
-    '        <span class="bc-url">HARIRIPONTARINI.COM</span>',
-    "      </div>",
-    "    </div>",
-    "  </div>",
-    '  <div class="bc-preview-page bc-preview-page--back">',
-    '    <div class="bc-bleed-box"></div>',
-    '    <div class="bc-trim-box">',
-    '      <div class="bc-corner-squares">',
-    '        <span class="bc-corner-square bc-corner-square--tl"></span>',
-    '        <span class="bc-corner-square bc-corner-square--tr"></span>',
-    '        <span class="bc-corner-square bc-corner-square--bl"></span>',
-    '        <span class="bc-corner-square bc-corner-square--br"></span>',
-    "      </div>",
-    '      <div class="bc-back-layout">',
-    '        <div class="bc-back-col bc-back-col--left">',
-    '          <div class="bc-back-name" id="bcBackName">Sebastian\nAndoni\nLopez</div>',
-    '          <div class="bc-back-phone-group">',
-    '            <div class="bc-back-phone-square">',
-    '              <canvas id="bcBackFloretteSquare" class="bc-florette-square-canvas" aria-hidden="true"></canvas>',
-    "            </div>",
-    '            <div class="bc-back-phone" id="bcBackPhone">+1 416 123 4567</div>',
-    "          </div>",
-    "        </div>",
-    '        <div class="bc-back-col bc-back-col--right">',
-    '          <div class="bc-back-email">',
-    '            <span id="bcBackEmailUser">SANDONILOPEZ</span>',
-    '            <span id="bcBackEmailDomain">@HP-ARCH.COM</span>',
-    "          </div>",
-    '          <div class="bc-back-meta">',
-    '            <span class="bc-back-role" id="bcBackRole">FOUNDING PARTNER</span>',
-    '            <div class="bc-back-credentials" id="bcBackCreds">',
-    '              <span>OAA, AAA, ARCHITECT AIBC,</span>',
-    '              <span>FRAIC, INTL. ASSOC. AIA</span>',
-    "            </div>",
-    "          </div>",
-    "        </div>",
-    "      </div>",
-    "    </div>",
-    "  </div>",
-    "</div>",
-  ].join("\n");
+  preview.innerHTML = renderPreviewMarkup();
   document.body.appendChild(preview);
 
   var nameInput = document.getElementById("bcNameInput");
@@ -143,10 +166,7 @@ window.RA.businessCard = (function () {
   }
 
   function oneWordPerLine(value) {
-    var words = (value || "")
-      .trim()
-      .split(/\s+/)
-      .filter(Boolean);
+    var words = (value || "").trim().split(/\s+/).filter(Boolean);
     return words.join("\n");
   }
 
@@ -183,7 +203,8 @@ window.RA.businessCard = (function () {
       );
       if (r > maxR) maxR = r;
     }
-    var scale = maxR > 0 ? (FLORETTE_SQUARE_PX * FLORETTE_FIT_FACTOR) / maxR : 1;
+    var scale =
+      maxR > 0 ? (FLORETTE_SQUARE_PX * FLORETTE_FIT_FACTOR) / maxR : 1;
 
     ctx.save();
     ctx.translate(FLORETTE_SQUARE_PX / 2, FLORETTE_SQUARE_PX / 2);
@@ -261,7 +282,8 @@ window.RA.businessCard = (function () {
 
     var size = NAME_BASE_PT;
     backName.style.fontSize = size + "pt";
-    backName.style.lineHeight = (size * NAME_LINE_HEIGHT_RATIO).toFixed(2) + "pt";
+    backName.style.lineHeight =
+      (size * NAME_LINE_HEIGHT_RATIO).toFixed(2) + "pt";
 
     // Shrink until name fits the left column width (and stays visually sane).
     while (size > NAME_MIN_PT && backName.scrollWidth > container.clientWidth) {
@@ -272,11 +294,11 @@ window.RA.businessCard = (function () {
     }
   }
 
-  [nameInput, phoneInput, emailInput, roleInput, credsInput].forEach(function (
-    input,
-  ) {
-    input.addEventListener("input", syncBackFields);
-  });
+  [nameInput, phoneInput, emailInput, roleInput, credsInput].forEach(
+    function (input) {
+      input.addEventListener("input", syncBackFields);
+    },
+  );
 
   window.addEventListener("resize", fitBackName);
   window.addEventListener("updateRays", drawFloretteSquares);

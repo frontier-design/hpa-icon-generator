@@ -27,6 +27,7 @@ window.RA = window.RA || {};
   var businessCardPanel = document.getElementById("sheet-business-card");
   var subtitle = document.querySelector(".bottom-sheet__subtitle");
   var bgColorGroup = florControls.querySelector(".color-swatches").closest(".control-group");
+  var desktopMq = window.matchMedia("(min-width: 1024px)");
 
   var toolNames = {
     florette: "The Florette Tool",
@@ -37,8 +38,82 @@ window.RA = window.RA || {};
 
   var savedBgColor = document.body.style.backgroundColor || "";
   var currentTool = "florette";
+  var desktopOnlyTools = {
+    "email-sig": true,
+    wallpaper: true,
+    "business-card": true,
+  };
+  var desktopOnlyModal = createDesktopOnlyModal();
 
-  function switchTool(toolId) {
+  function isDesktop() {
+    return desktopMq.matches;
+  }
+
+  function isDesktopOnlyTool(toolId) {
+    return !!desktopOnlyTools[toolId];
+  }
+
+  function createDesktopOnlyModal() {
+    var modal = document.createElement("div");
+    modal.className = "desktop-gate-modal";
+    modal.innerHTML = [
+      '<div class="desktop-gate-modal__backdrop" data-close></div>',
+      '<div class="desktop-gate-modal__dialog" role="dialog" aria-modal="true" aria-labelledby="desktopGateTitle">',
+      '  <h2 class="desktop-gate-modal__title" id="desktopGateTitle">Desktop Screen Required</h2>',
+      '  <p class="desktop-gate-modal__body">',
+      "    This tool is available on desktop screens only (1024px and up). Please open this page on a larger screen.",
+      "  </p>",
+      '  <button type="button" class="desktop-gate-modal__action">Continue with Florette</button>',
+      "</div>",
+    ].join("\n");
+    document.body.appendChild(modal);
+
+    var closeBtn = modal.querySelector(".desktop-gate-modal__action");
+    closeBtn.addEventListener("click", hideDesktopOnlyModal);
+    modal.addEventListener("click", function (e) {
+      if (e.target && e.target.hasAttribute("data-close")) {
+        hideDesktopOnlyModal();
+      }
+    });
+
+    document.addEventListener("keydown", function (e) {
+      if (e.key === "Escape" && modal.classList.contains("active")) {
+        hideDesktopOnlyModal();
+      }
+    });
+
+    return modal;
+  }
+
+  function showDesktopOnlyModal(toolId) {
+    var body = desktopOnlyModal.querySelector(".desktop-gate-modal__body");
+    var toolLabel = toolNames[toolId] || "This tool";
+    body.textContent = toolLabel + " is available on desktop screens only (1024px and up). Please open this page on a larger screen.";
+    desktopOnlyModal.classList.add("active");
+  }
+
+  function hideDesktopOnlyModal() {
+    desktopOnlyModal.classList.remove("active");
+  }
+
+  function syncToolAvailabilityInSelect() {
+    var desktop = isDesktop();
+    Array.prototype.forEach.call(toolSelect.options, function (option) {
+      var value = option.value;
+      if (!isDesktopOnlyTool(value)) return;
+      option.disabled = !desktop;
+    });
+  }
+
+  function switchTool(toolId, options) {
+    options = options || {};
+    if (isDesktopOnlyTool(toolId) && !isDesktop()) {
+      if (!options.suppressDesktopModal) {
+        showDesktopOnlyModal(toolId);
+      }
+      toolId = "florette";
+    }
+
     var previousTool = currentTool;
     toolSelect.value = toolId;
 
@@ -93,6 +168,10 @@ window.RA = window.RA || {};
       window.dispatchEvent(new CustomEvent("sigHidden"));
     }
 
+    if (isFlorette) {
+      window.dispatchEvent(new CustomEvent("floretteVisible"));
+    }
+
     // Background color per tool
     if (isFlorette) {
       document.body.style.backgroundColor = savedBgColor;
@@ -117,6 +196,22 @@ window.RA = window.RA || {};
   toolSelect.addEventListener("change", function () {
     switchTool(toolSelect.value);
   });
+
+  function handleViewportChange() {
+    var previousTool = currentTool;
+    syncToolAvailabilityInSelect();
+    if (!isDesktop() && isDesktopOnlyTool(previousTool)) {
+      switchTool("florette", { suppressDesktopModal: true });
+      showDesktopOnlyModal(previousTool);
+    }
+  }
+
+  if (desktopMq.addEventListener) {
+    desktopMq.addEventListener("change", handleViewportChange);
+  } else if (desktopMq.addListener) {
+    desktopMq.addListener(handleViewportChange);
+  }
+  syncToolAvailabilityInSelect();
 
   // Default: hide email sig section
   emailSig.style.display = "none";
