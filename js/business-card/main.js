@@ -348,7 +348,10 @@ Lopez</div>
       var newPos = 0;
       for (var i = 0; i < formatted.length; i++) {
         if (/\d/.test(formatted[i])) count++;
-        if (count >= digitsBefore) { newPos = i + 1; break; }
+        if (count >= digitsBefore) {
+          newPos = i + 1;
+          break;
+        }
       }
       if (count < digitsBefore) newPos = formatted.length;
       phoneInput.setSelectionRange(newPos, newPos);
@@ -356,22 +359,28 @@ Lopez</div>
     syncBackFields();
   });
 
-  [nameInput, emailInput, roleInput, credsInput].forEach(
-    function (input) {
-      input.addEventListener("input", syncBackFields);
-    },
-  );
+  [nameInput, emailInput, roleInput, credsInput].forEach(function (input) {
+    input.addEventListener("input", syncBackFields);
+  });
 
   window.addEventListener("resize", fitBackName);
   window.addEventListener("updateRays", drawFloretteSquares);
 
   var toggles = [
-    { id: "bcToggleFrontBg",     offClass: "bc-hide-front-bg" },
-    { id: "bcToggleBackBg",      offClass: "bc-hide-back-bg" },
-    { id: "bcToggleCropMarks",   offClass: "bc-hide-crop-marks" },
-    { id: "bcToggleCardBorder",  onClass: "bc-show-card-border", defaultOff: true },
-    { id: "bcToggleBleedBorder", onClass: "bc-show-bleed-border", defaultOff: true },
-    { id: "bcToggleBW",          onClass: "bc-black-white", defaultOff: true },
+    { id: "bcToggleFrontBg", offClass: "bc-hide-front-bg" },
+    { id: "bcToggleBackBg", offClass: "bc-hide-back-bg" },
+    { id: "bcToggleCropMarks", offClass: "bc-hide-crop-marks" },
+    {
+      id: "bcToggleCardBorder",
+      onClass: "bc-show-card-border",
+      defaultOff: true,
+    },
+    {
+      id: "bcToggleBleedBorder",
+      onClass: "bc-show-bleed-border",
+      defaultOff: true,
+    },
+    { id: "bcToggleBW", onClass: "bc-black-white", defaultOff: true },
   ];
 
   toggles.forEach(function (cfg) {
@@ -411,7 +420,8 @@ Lopez</div>
 
     var pageLabel = document.createElement("span");
     pageLabel.className = "bc-pms-label";
-    pageLabel.textContent = label === "front" ? "Front Florette Layer" : "Back Florette Layer";
+    pageLabel.textContent =
+      label === "front" ? "Front Florette Layer" : "Back Florette Layer";
     var trim = clone.querySelector(".bc-trim-box");
     if (trim) trim.appendChild(pageLabel);
 
