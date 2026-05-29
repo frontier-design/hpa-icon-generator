@@ -7,20 +7,42 @@
 
 @font-face {
   font-family: 'EK Notice Classic';
-  src: url('assets/fonts/EKNoticeClassicTRIAL-Regular.ttf') format('truetype');
+  src: url('assets/fonts/Notice Classic TTF/WOFF/EKNoticeClassic-Light.woff2') format('woff2'),
+       url('assets/fonts/Notice Classic TTF/WOFF/EKNoticeClassic-Light.woff') format('woff');
   font-style: normal;
+  font-weight: 300;
+}
+
+@font-face {
+  font-family: 'EK Notice Classic';
+  src: url('assets/fonts/Notice Classic TTF/WOFF/EKNoticeClassic-Regular.woff2') format('woff2'),
+       url('assets/fonts/Notice Classic TTF/WOFF/EKNoticeClassic-Regular.woff') format('woff');
+  font-style: normal;
+  font-weight: 400;
+}
+
+@font-face {
+  font-family: 'EK Notice Classic';
+  src: url('assets/fonts/Notice Classic TTF/WOFF/EKNoticeClassic-Medium.woff2') format('woff2'),
+       url('assets/fonts/Notice Classic TTF/WOFF/EKNoticeClassic-Medium.woff') format('woff');
+  font-style: normal;
+  font-weight: 500 700;
 }
 
 @font-face {
   font-family: 'Bradford';
-  src: url('assets/fonts/BradfordTrial-Book.otf') format('opentype');
+  src: url('assets/fonts/Bradford LL/WOFF/BradfordLLWeb-Book.woff2') format('woff2'),
+       url('assets/fonts/Bradford LL/WOFF/BradfordLLWeb-Book.woff') format('woff');
   font-style: normal;
+  font-weight: 400;
 }
 
 @font-face {
   font-family: 'Bradford';
-  src: url('assets/fonts/BradfordTrial-BookItalic.otf') format('opentype');
+  src: url('assets/fonts/Bradford LL/WOFF/BradfordLLWeb-BookItalic.woff2') format('woff2'),
+       url('assets/fonts/Bradford LL/WOFF/BradfordLLWeb-BookItalic.woff') format('woff');
   font-style: italic;
+  font-weight: 400;
 }
 
 /* ── Toast (state added) — matches sheet / control buttons (EK Notice, uppercase) ── */

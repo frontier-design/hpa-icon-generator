@@ -1,0 +1,150 @@
+/*
+ *
+ * INSTRUCTIONS
+ *
+ * Copy the Legal Disclaimer and the @font-faces statements to your regular CSS file.
+ * The font file(s) should be placed relative to the regular CSS file.
+ *
+ */
+
+/*
+ * Legal Disclaimer for Web licence
+ *
+ * Licence to use self-hosted webfonts for displaying dynamic text on specified website domains. Our package includes WOFF and WOFF2 font formats.
+ *
+ * Should the license page views limit be exceeded the license holder will be required to contact Lineto.com for an upgrade.
+ * 
+ * It is strictly prohibited to rename the font and to download or use these fonts in any other media. 
+ * 
+ * These Web fonts are licensed exclusively for the use on the following domain(s) and their subdomains:
+ *
+ * hariripontarini.com (monthly pageviews: <50K)
+ *
+ */
+
+/* complete */
+
+@font-face {
+  font-family: "BradfordLLWeb-Book";
+  src: url("BradfordLLWeb-Book.woff") format("woff");
+}
+
+@font-face {
+  font-family: "BradfordLLWeb-Book";
+  src: url("BradfordLLWeb-Book.woff2") format("woff2");
+}
+
+@font-face {
+  font-family: "BradfordLLWeb-BookItalic";
+  src: url("BradfordLLWeb-BookItalic.woff") format("woff");
+}
+
+@font-face {
+  font-family: "BradfordLLWeb-BookItalic";
+  src: url("BradfordLLWeb-BookItalic.woff2") format("woff2");
+}
+
+@font-face {
+  font-family: "BradfordLLWeb-Light";
+  src: url("BradfordLLWeb-Light.woff") format("woff");
+}
+
+@font-face {
+  font-family: "BradfordLLWeb-Light";
+  src: url("BradfordLLWeb-Light.woff2") format("woff2");
+}
+
+@font-face {
+  font-family: "BradfordLLWeb-LightItalic";
+  src: url("BradfordLLWeb-LightItalic.woff") format("woff");
+}
+
+@font-face {
+  font-family: "BradfordLLWeb-LightItalic";
+  src: url("BradfordLLWeb-LightItalic.woff2") format("woff2");
+}
+
+@font-face {
+  font-family: "BradfordLLWeb-Medium";
+  src: url("BradfordLLWeb-Medium.woff") format("woff");
+}
+
+@font-face {
+  font-family: "BradfordLLWeb-Medium";
+  src: url("BradfordLLWeb-Medium.woff2") format("woff2");
+}
+
+@font-face {
+  font-family: "BradfordLLWeb-MediumItalic";
+  src: url("BradfordLLWeb-MediumItalic.woff") format("woff");
+}
+
+@font-face {
+  font-family: "BradfordLLWeb-MediumItalic";
+  src: url("BradfordLLWeb-MediumItalic.woff2") format("woff2");
+}
+
+
+/* subset */
+
+@font-face {
+  font-family: "BradfordLLSub-Book";
+  src: url("BradfordLLSub-Book.woff") format("woff");
+}
+
+@font-face {
+  font-family: "BradfordLLSub-Book";
+  src: url("BradfordLLSub-Book.woff2") format("woff2");
+}
+
+@font-face {
+  font-family: "BradfordLLSub-BookItalic";
+  src: url("BradfordLLSub-BookItalic.woff") format("woff");
+}
+
+@font-face {
+  font-family: "BradfordLLSub-BookItalic";
+  src: url("BradfordLLSub-BookItalic.woff2") format("woff2");
+}
+
+@font-face {
+  font-family: "BradfordLLSub-Light";
+  src: url("BradfordLLSub-Light.woff") format("woff");
+}
+
+@font-face {
+  font-family: "BradfordLLSub-Light";
+  src: url("BradfordLLSub-Light.woff2") format("woff2");
+}
+
+@font-face {
+  font-family: "BradfordLLSub-LightItalic";
+  src: url("BradfordLLSub-LightItalic.woff") format("woff");
+}
+
+@font-face {
+  font-family: "BradfordLLSub-LightItalic";
+  src: url("BradfordLLSub-LightItalic.woff2") format("woff2");
+}
+
+@font-face {
+  font-family: "BradfordLLSub-Medium";
+  src: url("BradfordLLSub-Medium.woff") format("woff");
+}
+
+@font-face {
+  font-family: "BradfordLLSub-Medium";
+  src: url("BradfordLLSub-Medium.woff2") format("woff2");
+}
+
+@font-face {
+  font-family: "BradfordLLSub-MediumItalic";
+  src: url("BradfordLLSub-MediumItalic.woff") format("woff");
+}
+
+@font-face {
+  font-family: "BradfordLLSub-MediumItalic";
+  src: url("BradfordLLSub-MediumItalic.woff2") format("woff2");
+}
+
+

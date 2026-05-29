@@ -62,16 +62,18 @@
 
 @font-face {
   font-family: "Bradford Light";
-  src: url("../../assets/fonts/BradfordTrial-Light.otf") format("opentype");
+  src: url("../../assets/fonts/Bradford LL/WOFF/BradfordLLWeb-Light.woff2") format("woff2"),
+       url("../../assets/fonts/Bradford LL/WOFF/BradfordLLWeb-Light.woff") format("woff");
   font-style: normal;
-  font-weight: normal;
+  font-weight: 300;
 }
 
 @font-face {
   font-family: "Bradford Book";
-  src: url("../../assets/fonts/BradfordTrial-Book.otf") format("opentype");
+  src: url("../../assets/fonts/Bradford LL/WOFF/BradfordLLWeb-Book.woff2") format("woff2"),
+       url("../../assets/fonts/Bradford LL/WOFF/BradfordLLWeb-Book.woff") format("woff");
   font-style: normal;
-  font-weight: normal;
+  font-weight: 400;
 }
 
 .bc-bleed-box,
