@@ -170,6 +170,81 @@
   border-color: rgba(81, 56, 45, 0.3);
 }
 
+/* ── Canvas info (top-left of canvas, not over sidebar) ── */
+
+.canvas-info-nav {
+  position: fixed;
+  top: 12px;
+  z-index: 1050;
+}
+
+.canvas-info-nav .canvas-info-btn {
+  width: auto;
+  min-width: 42px;
+  padding: 8px 14px;
+  text-align: center;
+  font-family: 'Bradford', serif;
+  font-style: italic;
+  font-weight: 400;
+  font-size: 0.875rem;
+  text-transform: none;
+  letter-spacing: 0;
+}
+
+.canvas-info-nav--light .canvas-info-btn {
+  border-color: rgba(81, 56, 45, 0.2);
+  background: rgba(81, 56, 45, 0.06);
+  color: #51382d;
+  backdrop-filter: none;
+  -webkit-backdrop-filter: none;
+}
+
+.canvas-info-nav--light .canvas-info-btn:hover {
+  background: rgba(81, 56, 45, 0.12);
+  border-color: rgba(81, 56, 45, 0.3);
+}
+
+@supports (padding: env(safe-area-inset-top)) {
+  .canvas-info-nav {
+    top: calc(12px + env(safe-area-inset-top));
+  }
+}
+
+#hpaInfoModal .sig-modal__title {
+  text-align: center;
+  font-family: 'EK Notice Classic', sans-serif;
+  font-weight: 400;
+  font-size: 1.5rem;
+  text-transform: uppercase;
+  line-height: 1.25;
+  letter-spacing: 0.04em;
+  color: var(--sheet-ui-color);
+  padding: 0 28px;
+}
+
+.sig-modal__body ol.hpa-info-list {
+  margin: 16px 0 0;
+  padding-left: 1.25rem;
+}
+
+.sig-modal__body ol.hpa-info-list > li {
+  margin-bottom: 14px;
+}
+
+.sig-modal__body ol.hpa-info-list > li:last-child {
+  margin-bottom: 0;
+}
+
+.sig-modal__body ol.hpa-info-list strong {
+  font-family: 'EK Notice Classic', sans-serif;
+  font-size: 0.75rem;
+  font-weight: 600;
+  font-style: normal;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  color: #51382d;
+}
+
 /* ── Tool placeholder ── */
 
 .tool-placeholder {

@@ -9,8 +9,20 @@ window.RA.businessCard = (function () {
     <textarea id="bcNameInput" class="sig-input bc-panel-textarea" rows="3" placeholder="Name"></textarea>
   </div>
   <div class="control-group">
-    <label class="control-label" for="bcPhoneInput">Phone</label>
-    <input type="text" id="bcPhoneInput" class="sig-input" placeholder="123 456 7890">
+    <label class="control-label" for="bcCountryCodeInput">Country Code</label>
+    <input type="text" id="bcCountryCodeInput" class="sig-input" placeholder="+1" value="+1">
+  </div>
+  <div class="control-group">
+    <label class="control-label" for="bcMobileInput">Mobile</label>
+    <input type="text" id="bcMobileInput" class="sig-input" placeholder="123 456 7890">
+  </div>
+  <div class="control-group">
+    <label class="control-label" for="bcOfficeInput">Office</label>
+    <input type="text" id="bcOfficeInput" class="sig-input" placeholder="123 456 7890">
+  </div>
+  <div class="control-group">
+    <label class="control-label" for="bcExtensionInput">Extension</label>
+    <input type="text" id="bcExtensionInput" class="sig-input" placeholder="123">
   </div>
   <div class="control-group">
     <label class="control-label" for="bcEmailInput">Email</label>
@@ -116,7 +128,10 @@ Lopez</div>
           <div class="bc-back-phone-square">
             <canvas id="bcBackFloretteSquare" class="bc-florette-square-canvas" aria-hidden="true"></canvas>
           </div>
-          <div class="bc-back-phone" id="bcBackPhone">416 123 4567</div>
+          <div class="bc-back-phone-lines">
+            <div class="bc-back-phone" id="bcBackMobile">+1 416 987 6543</div>
+            <div class="bc-back-phone" id="bcBackOffice">+1 416 123 4567</div>
+          </div>
         </div>
       </div>
       <div class="bc-back-col bc-back-col--right">
@@ -156,13 +171,17 @@ Lopez</div>
   document.body.appendChild(preview);
 
   var nameInput = document.getElementById("bcNameInput");
-  var phoneInput = document.getElementById("bcPhoneInput");
+  var countryCodeInput = document.getElementById("bcCountryCodeInput");
+  var mobileInput = document.getElementById("bcMobileInput");
+  var officeInput = document.getElementById("bcOfficeInput");
+  var extensionInput = document.getElementById("bcExtensionInput");
   var emailInput = document.getElementById("bcEmailInput");
   var roleInput = document.getElementById("bcRoleInput");
   var credsInput = document.getElementById("bcCredsInput");
 
   var backName = document.getElementById("bcBackName");
-  var backPhone = document.getElementById("bcBackPhone");
+  var backMobile = document.getElementById("bcBackMobile");
+  var backOffice = document.getElementById("bcBackOffice");
   var backEmailUser = document.getElementById("bcBackEmailUser");
   var backEmailDomain = document.getElementById("bcBackEmailDomain");
   var backRole = document.getElementById("bcBackRole");
@@ -187,7 +206,8 @@ Lopez</div>
 
   var defaults = {
     name: "Name",
-    phone: "123 456 7890",
+    countryCode: "+1",
+    mobile: "123 456 7890",
     email: "email@email.com",
     role: "role",
     credentials: "OAA, AAA, ARCHITECT AIBC, FRAIC, INTL. ASSOC. AIA",
@@ -196,6 +216,13 @@ Lopez</div>
   function valueOrDefault(value, fallback) {
     var trimmed = (value || "").trim();
     return trimmed || fallback;
+  }
+
+  function composeNumber(code, number) {
+    var n = (number || "").trim();
+    if (!n) return "";
+    var c = (code || "").trim();
+    return c ? c + " " + n : n;
   }
 
   function oneWordPerLine(value) {
@@ -271,13 +298,36 @@ Lopez</div>
 
   function syncBackFields() {
     var nameValue = valueOrDefault(nameInput.value, defaults.name);
-    var phoneValue = valueOrDefault(phoneInput.value, defaults.phone);
+    var codeValue = (countryCodeInput.value || "").trim();
+    var mobileValue = valueOrDefault(mobileInput.value, defaults.mobile);
+    var officeValue = (officeInput.value || "").trim();
+    var extensionValue = (extensionInput.value || "").trim();
     var emailValue = valueOrDefault(emailInput.value, defaults.email);
     var roleValue = valueOrDefault(roleInput.value, defaults.role);
     var credsValue = valueOrDefault(credsInput.value, defaults.credentials);
 
     backName.textContent = oneWordPerLine(nameValue);
-    backPhone.textContent = phoneValue;
+    backMobile.textContent = composeNumber(codeValue, mobileValue);
+
+    if (officeValue || extensionValue) {
+      backOffice.innerHTML = "";
+      if (officeValue) {
+        backOffice.appendChild(
+          document.createTextNode(composeNumber(codeValue, officeValue)),
+        );
+      }
+      if (extensionValue) {
+        var ext = document.createElement("em");
+        ext.className = "bc-back-ext";
+        ext.textContent =
+          (officeValue ? ", " : "") + "Ext. " + extensionValue;
+        backOffice.appendChild(ext);
+      }
+      backOffice.style.display = "";
+    } else {
+      backOffice.textContent = "";
+      backOffice.style.display = "none";
+    }
 
     var e = splitEmailUpper(emailValue);
     backEmailUser.textContent = e.user;
@@ -337,29 +387,41 @@ Lopez</div>
     return parts.join(" ");
   }
 
-  phoneInput.addEventListener("input", function () {
-    var cursorPos = phoneInput.selectionStart;
-    var raw = phoneInput.value;
-    var formatted = formatPhoneNumber(raw);
-    if (formatted !== raw) {
-      var digitsBefore = raw.slice(0, cursorPos).replace(/[^\d]/g, "").length;
-      phoneInput.value = formatted;
-      var count = 0;
-      var newPos = 0;
-      for (var i = 0; i < formatted.length; i++) {
-        if (/\d/.test(formatted[i])) count++;
-        if (count >= digitsBefore) {
-          newPos = i + 1;
-          break;
+  function attachPhoneFormatting(input) {
+    input.addEventListener("input", function () {
+      var cursorPos = input.selectionStart;
+      var raw = input.value;
+      var formatted = formatPhoneNumber(raw);
+      if (formatted !== raw) {
+        var digitsBefore = raw.slice(0, cursorPos).replace(/[^\d]/g, "").length;
+        input.value = formatted;
+        var count = 0;
+        var newPos = 0;
+        for (var i = 0; i < formatted.length; i++) {
+          if (/\d/.test(formatted[i])) count++;
+          if (count >= digitsBefore) {
+            newPos = i + 1;
+            break;
+          }
         }
+        if (count < digitsBefore) newPos = formatted.length;
+        input.setSelectionRange(newPos, newPos);
       }
-      if (count < digitsBefore) newPos = formatted.length;
-      phoneInput.setSelectionRange(newPos, newPos);
-    }
-    syncBackFields();
-  });
+      syncBackFields();
+    });
+  }
 
-  [nameInput, emailInput, roleInput, credsInput].forEach(function (input) {
+  attachPhoneFormatting(mobileInput);
+  attachPhoneFormatting(officeInput);
+
+  [
+    nameInput,
+    countryCodeInput,
+    extensionInput,
+    emailInput,
+    roleInput,
+    credsInput,
+  ].forEach(function (input) {
     input.addEventListener("input", syncBackFields);
   });
 
@@ -417,6 +479,13 @@ Lopez</div>
   function clonePmsFlorettePage(sourcePage, label) {
     var clone = sourcePage.cloneNode(true);
     clone.classList.add("bc-pms-sep-page");
+
+    // cloneNode does not copy canvas bitmaps, so redraw the florette
+    // into the cloned canvas(es) or they'll print blank.
+    var clonedCanvases = clone.querySelectorAll(".bc-florette-square-canvas");
+    for (var i = 0; i < clonedCanvases.length; i++) {
+      drawFloretteSquare(clonedCanvases[i]);
+    }
 
     var pageLabel = document.createElement("span");
     pageLabel.className = "bc-pms-label";

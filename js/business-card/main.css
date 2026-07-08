@@ -40,6 +40,12 @@
 .bc-preview-page {
   --bc-text-color: #51382d;
   --bc-crop-stroke: 0.25px;
+  /* Shared inset so front and back text align identically on print */
+  --bc-inset: 0.18in;
+  --bc-florette-size: 0.1in;
+  font-kerning: normal;
+  font-feature-settings: "kern" 1;
+  text-rendering: optimizeLegibility;
   position: relative;
   width: min(
     620px,
@@ -100,7 +106,7 @@
   display: flex;
   align-items: flex-start;
   justify-content: center;
-  padding: 0.18in;
+  padding: var(--bc-inset);
 }
 
 .bc-trim-box::before {
@@ -226,6 +232,10 @@
   color: var(--bc-text-color);
 }
 
+.bc-back-ext {
+  font-style: italic;
+}
+
 .bc-back-phone-group {
   display: flex;
   flex-direction: column;
@@ -233,8 +243,15 @@
   gap: 0.06in;
 }
 
+.bc-back-phone-lines {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 2pt;
+}
+
 .bc-back-phone-square {
-  width: 0.2in;
+  width: var(--bc-florette-size);
   aspect-ratio: 1 / 1;
   border: 0;
   overflow: hidden;
@@ -283,8 +300,8 @@
 
 .bc-address {
   position: absolute;
-  left: 0.18in;
-  bottom: 0.18in;
+  left: var(--bc-inset);
+  bottom: var(--bc-inset);
   display: flex;
   flex-direction: column;
   font-family: "Bradford", serif;
@@ -303,8 +320,8 @@
 
 .bc-url-group {
   position: absolute;
-  right: 0.18in;
-  bottom: 0.18in;
+  right: var(--bc-inset);
+  bottom: var(--bc-inset);
 }
 
 .bc-url {
@@ -319,7 +336,7 @@
 
 .bc-top-left-marker {
   position: absolute;
-  width: 0.2in;
+  width: var(--bc-florette-size);
   aspect-ratio: 1 / 1;
   border: 0;
   overflow: hidden;

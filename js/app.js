@@ -10,10 +10,50 @@ window.RA = window.RA || {};
     '    <option value="email-sig">Email Signature</option>',
     '    <option value="wallpaper">Wallpaper</option>',
     '    <option value="business-card">Business Card</option>',
-    '  </select>',
-    '</div>',
+    "  </select>",
+    "</div>",
   ].join("\n");
   document.body.appendChild(nav);
+
+  var infoNav = document.createElement("div");
+  infoNav.className = "canvas-info-nav";
+  var infoBtn = document.createElement("button");
+  infoBtn.type = "button";
+  infoBtn.className = "tool-nav__select canvas-info-btn";
+  infoBtn.id = "canvasInfoBtn";
+  infoBtn.setAttribute("aria-label", "About HPA Tools");
+  infoBtn.title = "About HPA Tools";
+  infoBtn.textContent = "i";
+  infoNav.appendChild(infoBtn);
+  document.body.appendChild(infoNav);
+
+  function positionInfoNav() {
+    var sheet = document.querySelector(".bottom-sheet");
+    var left = 12;
+
+    if (window.matchMedia("(min-width: 1024px)").matches && sheet) {
+      var panelWidth = sheet.offsetWidth;
+      if (!panelWidth || panelWidth < 40) {
+        panelWidth = Math.min(320, window.innerWidth * 0.28);
+      }
+      left = panelWidth + 12;
+    }
+
+    infoNav.style.left = left + "px";
+  }
+
+  window.addEventListener("sheetLayout", positionInfoNav);
+  window.addEventListener("resize", positionInfoNav);
+  if (window.RA.sheet && window.RA.sheet.getVisibleMetrics) {
+    positionInfoNav();
+  } else {
+    requestAnimationFrame(function () {
+      requestAnimationFrame(positionInfoNav);
+    });
+  }
+
+  var hpaInfoModal = createHpaInfoModal();
+  infoBtn.addEventListener("click", showHpaInfoModal);
 
   var toolSelect = document.getElementById("toolSelect");
   var canvas = document.getElementById("myCanvas");
@@ -26,7 +66,9 @@ window.RA = window.RA || {};
   var wallpaperPanel = document.getElementById("sheet-wallpaper");
   var businessCardPanel = document.getElementById("sheet-business-card");
   var subtitle = document.querySelector(".bottom-sheet__subtitle");
-  var bgColorGroup = florControls.querySelector(".color-swatches").closest(".control-group");
+  var bgColorGroup = florControls
+    .querySelector(".color-swatches")
+    .closest(".control-group");
   var desktopMq = window.matchMedia("(min-width: 1024px)");
 
   var toolNames = {
@@ -51,6 +93,67 @@ window.RA = window.RA || {};
 
   function isDesktopOnlyTool(toolId) {
     return !!desktopOnlyTools[toolId];
+  }
+
+  function createHpaInfoModal() {
+    var modal = document.createElement("div");
+    modal.className = "sig-modal";
+    modal.id = "hpaInfoModal";
+    modal.innerHTML = [
+      '<div class="sig-modal__backdrop" data-close></div>',
+      '<div class="sig-modal__content" role="dialog" aria-modal="true" aria-labelledby="hpaInfoTitle">',
+      '  <button type="button" class="sig-modal__close" aria-label="Close">&times;</button>',
+      '  <h2 class="sig-modal__title" id="hpaInfoTitle">HPA Tool Intro</h2>',
+      '  <div class="sig-modal__body">',
+      "    <p>Design, animate, and export custom florette patterns for use across HPA branded materials. The tool includes four modes: Florette Designer, Email Signature Generator, Wallpaper Generator, and Business Card Generator. The florette created in the Florette Designer is applied across all other modes.</p>",
+      '    <ol class="hpa-info-list">',
+      "      <li><strong>Florette Designer:</strong> Create a custom florette using the sliders, buttons, and dropdown menu in the left-hand panel. Adjust the design to your preference, then use the “Add State” button to save the shape preset to the Animation tab. Once you have created and saved multiple florettes as states, you can play the animation to see your custom design morph between them. The florette design you created in this tab applies to all the other modes.</li>",
+      "      <li><strong>Email Signature Generator:</strong> Generate a personalized email signature featuring your custom florette. Fill in your name, role, and credentials. The tool will render your florette design as an animated GIF or static image. Click the “Generate Signature” button on the bottom right to create your signature, then click “Copy Signature” button to copy the design to your clipboard. You can then paste the design into the signature section of your Gmail, Outlook, or other email profile.</li>",
+      "      <li><strong>Wallpaper Generator:</strong> Create HPA branded desktop and mobile backgrounds for a variety of screen sizes and aspect ratios using custom generated florette.</li>",
+      "      <li><strong>Business Card Generator:</strong> Generate a print ready business card featuring your custom florette. Enter your name, phone number, email, role, and credentials, the tool will preview your card. Review that the information is correct and click 'Submit'. The HPA communications team will then have your custom card printed.</li>",
+      "    </ol>",
+      "  </div>",
+      "</div>",
+    ].join("\n");
+    document.body.appendChild(modal);
+
+    modal
+      .querySelector(".sig-modal__close")
+      .addEventListener("click", hideHpaInfoModal);
+    modal.addEventListener("click", function (e) {
+      if (e.target && e.target.hasAttribute("data-close")) {
+        hideHpaInfoModal();
+      }
+    });
+
+    document.addEventListener("keydown", function (e) {
+      if (e.key === "Escape" && modal.classList.contains("active")) {
+        hideHpaInfoModal();
+      }
+    });
+
+    return modal;
+  }
+
+  function showHpaInfoModal() {
+    hpaInfoModal.classList.add("active");
+    var closeBtn = hpaInfoModal.querySelector(".sig-modal__close");
+    if (closeBtn) closeBtn.focus();
+  }
+
+  function hideHpaInfoModal() {
+    hpaInfoModal.classList.remove("active");
+    if (
+      document.activeElement &&
+      hpaInfoModal.contains(document.activeElement)
+    ) {
+      infoBtn.focus();
+    }
+  }
+
+  function syncChromeTheme() {
+    var light = nav.classList.contains("tool-nav--light");
+    infoNav.classList.toggle("canvas-info-nav--light", light);
   }
 
   function createDesktopOnlyModal() {
@@ -88,7 +191,9 @@ window.RA = window.RA || {};
   function showDesktopOnlyModal(toolId) {
     var body = desktopOnlyModal.querySelector(".desktop-gate-modal__body");
     var toolLabel = toolNames[toolId] || "This tool";
-    body.textContent = toolLabel + " is available on desktop screens only (1024px and up). Please open this page on a larger screen.";
+    body.textContent =
+      toolLabel +
+      " is available on desktop screens only (1024px and up). Please open this page on a larger screen.";
     desktopOnlyModal.classList.add("active");
   }
 
@@ -175,7 +280,10 @@ window.RA = window.RA || {};
     // Background color per tool
     if (isFlorette) {
       document.body.style.backgroundColor = savedBgColor;
-      nav.classList.toggle("tool-nav--light", isLightOrTransparent(savedBgColor));
+      nav.classList.toggle(
+        "tool-nav--light",
+        isLightOrTransparent(savedBgColor),
+      );
     } else {
       // Only snapshot florette color when we are actually leaving florette.
       if (previousTool === "florette") {
@@ -184,6 +292,8 @@ window.RA = window.RA || {};
       document.body.style.backgroundColor = "#ffffff";
       nav.classList.add("tool-nav--light");
     }
+
+    syncChromeTheme();
 
     // Update subtitle
     if (subtitle) {
@@ -261,6 +371,7 @@ window.RA = window.RA || {};
     if (currentTool !== "florette") return;
     var bg = document.body.style.backgroundColor || "";
     nav.classList.toggle("tool-nav--light", isLightOrTransparent(bg));
+    syncChromeTheme();
   }
 
   // Listen for florette swatch clicks
