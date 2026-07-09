@@ -78,6 +78,33 @@ window.RA = window.RA || {};
     "business-card": "Business Card",
   };
 
+  var validTools = {
+    florette: true,
+    "email-sig": true,
+    wallpaper: true,
+    "business-card": true,
+  };
+
+  function toolFromPath() {
+    var seg = window.location.pathname.split("/").filter(Boolean).pop() || "";
+    return validTools[seg] ? seg : null;
+  }
+
+  function updateUrlForTool(toolId, replace) {
+    if (!window.history || !window.history.pushState) return;
+    var newPath = "/" + toolId;
+    if (window.location.pathname === newPath) return;
+    try {
+      if (replace) {
+        window.history.replaceState({ tool: toolId }, "", newPath);
+      } else {
+        window.history.pushState({ tool: toolId }, "", newPath);
+      }
+    } catch (e) {
+      /* no-op: history updates can fail on file:// or sandboxed origins */
+    }
+  }
+
   var savedBgColor = document.body.style.backgroundColor || "";
   var currentTool = "florette";
   var desktopOnlyTools = {
@@ -301,10 +328,20 @@ window.RA = window.RA || {};
     }
 
     currentTool = toolId;
+
+    // Reflect the active tool in the URL (e.g. /florette, /business-card)
+    if (options.updateUrl !== false) {
+      updateUrlForTool(toolId, options.replaceUrl);
+    }
   }
 
   toolSelect.addEventListener("change", function () {
     switchTool(toolSelect.value);
+  });
+
+  // Sync tool when the user navigates browser history (back/forward).
+  window.addEventListener("popstate", function () {
+    switchTool(toolFromPath() || "florette", { updateUrl: false });
   });
 
   var isPrinting = false;
@@ -337,6 +374,18 @@ window.RA = window.RA || {};
     desktopMq.addListener(handleViewportChange);
   }
   syncToolAvailabilityInSelect();
+
+  // Initialize the tool from the URL path, and normalize the URL otherwise.
+  var initialTool = toolFromPath();
+  if (initialTool && initialTool !== currentTool) {
+    switchTool(initialTool, {
+      updateUrl: true,
+      replaceUrl: true,
+      suppressDesktopModal: true,
+    });
+  } else {
+    updateUrlForTool(currentTool, true);
+  }
 
   // Default: hide email sig section
   emailSig.style.display = "none";

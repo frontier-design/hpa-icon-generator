@@ -292,6 +292,16 @@
   letter-spacing: 0.04em;
 }
 
+.bc-back-meta--no-creds {
+  width: 100%;
+  align-items: flex-end;
+  text-align: right;
+}
+
+.bc-back-meta--no-creds .bc-back-role {
+  margin-bottom: 0;
+}
+
 .bc-back-credentials {
   display: flex;
   flex-direction: column;

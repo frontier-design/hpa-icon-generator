@@ -139,7 +139,7 @@ Lopez</div>
           <span id="bcBackEmailUser">SANDONILOPEZ</span>
           <span id="bcBackEmailDomain">@HP-ARCH.COM</span>
         </div>
-        <div class="bc-back-meta">
+        <div class="bc-back-meta" id="bcBackMeta">
           <span class="bc-back-role" id="bcBackRole">FOUNDING PARTNER</span>
           <div class="bc-back-credentials" id="bcBackCreds">
             <span>OAA, AAA, ARCHITECT AIBC,</span>
@@ -186,6 +186,7 @@ Lopez</div>
   var backEmailDomain = document.getElementById("bcBackEmailDomain");
   var backRole = document.getElementById("bcBackRole");
   var backCreds = document.getElementById("bcBackCreds");
+  var backMeta = document.getElementById("bcBackMeta");
   var frontFloretteSquare = document.getElementById("bcFrontFloretteSquare");
   var backFloretteSquare = document.getElementById("bcBackFloretteSquare");
 
@@ -335,6 +336,8 @@ Lopez</div>
 
     backRole.textContent = roleValue.toUpperCase();
 
+    var hasCredsInput = (credsInput.value || "").trim().length > 0;
+
     var lines = credsValue
       .split(/\r?\n/)
       .map(function (s) {
@@ -343,11 +346,10 @@ Lopez</div>
       .filter(Boolean);
 
     backCreds.innerHTML = "";
-    if (!lines.length) {
-      var empty = document.createElement("span");
-      empty.textContent = "";
-      backCreds.appendChild(empty);
+    if (!hasCredsInput || !lines.length) {
+      backMeta.classList.add("bc-back-meta--no-creds");
     } else {
+      backMeta.classList.remove("bc-back-meta--no-creds");
       for (var i = 0; i < lines.length; i++) {
         var span = document.createElement("span");
         span.textContent = lines[i].toUpperCase();

@@ -1,0 +1,8 @@
+{
+  "rewrites": [
+    { "source": "/florette", "destination": "/index.html" },
+    { "source": "/email-sig", "destination": "/index.html" },
+    { "source": "/wallpaper", "destination": "/index.html" },
+    { "source": "/business-card", "destination": "/index.html" }
+  ]
+}
